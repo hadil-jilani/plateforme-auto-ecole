@@ -11,6 +11,9 @@ export * from './dtos/resetPwdEmail.dto';
 export * from './dtos/signup.dto';
 export * from './dtos/acceptationEmail.dto';
 export * from './dtos/newFormateur.dto';
+export * from './dtos/updateFormateur.dto';
+export * from './dtos/update-profile.dto';
+export * from './dtos/update-password.dto';
 
 export * from './Exceptions/rpc.exceptionFilter'
 

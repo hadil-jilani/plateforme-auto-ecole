@@ -72,6 +72,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/formateurs/tsconfig.app.json"
       }
+    },
+    "profile": {
+      "type": "application",
+      "root": "apps/profile",
+      "entryFile": "main",
+      "sourceRoot": "apps/profile/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/profile/tsconfig.app.json"
+      }
     }
   }
 }

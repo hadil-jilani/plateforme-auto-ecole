@@ -7,7 +7,7 @@ import { loginDto } from '@app/shared';
 import { ForgotPasswordDto } from '@app/shared';
 import { ResetPasswordDto } from '@app/shared';
 
-@Controller('auth')
+@Controller()
 export class AuthController {
     userService: any;
     constructor(private readonly authservice : AuthService,
@@ -53,6 +53,7 @@ export class AuthController {
 
     @EventPattern('logout-user')
     logoutUser(req : Request){
+        console.log("controller auth")
         return this.authservice.logout(req)
     }
    

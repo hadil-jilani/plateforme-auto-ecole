@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { IsString, IsEmail, MinLength, IsNotEmpty, IsNumber, IsOptional, IsNumberString } from "class-validator";
 
 
 export class NewformateurDto {
@@ -8,6 +8,10 @@ export class NewformateurDto {
     name: string;
     @IsNotEmpty()
     email: string;
+    @IsNotEmpty()
+    @IsNumberString()
+    @MinLength(8)
+    phoneNumber: string
     @IsOptional()
     creneauxIndisponibles: string[];
 

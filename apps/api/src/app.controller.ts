@@ -1,47 +1,74 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { activationDto, AuthGuard, ForgotPasswordDto, loginDto, ResetPasswordDto, Role, Roles, RolesGuard, signupDto } from '@app/shared';
-import { UpdateformateurDto } from '@app/shared/dtos/updateFormateur.dto';
+import { activationDto, AuthGuard, ForgotPasswordDto, loginDto, ResetPasswordDto, Role, Roles, RolesGuard, signupDto, UpdatePasswordDto, UpdateProfileDto } from '@app/shared';
+import { UpdateFormateurDto } from '@app/shared';
 
 @Controller('api')
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
-  // tkhdm
   @Post("/signup")
   Signup(@Body() data: signupDto) {
     const token = this.appService.Signup(data);
     return token
   }
-  // tkhdm
   @Post('/signup/account-activation')
   ActivateUserAccount(@Body() activationToken: activationDto) {
 
     return this.appService.ActivateAccount(activationToken)
   }
-  // tkhdm
   @Post('/login')
 
   Login(@Body() data: loginDto) {
     return this.appService.Login(data);
   }
 
-  // tkhdm
   @Post('/login/forget-password')
   ForgetPassword(@Body() email: ForgotPasswordDto) {
     return this.appService.ForgetPassword(email);
   }
 
-  // tkhdm
   @Post('/login/forget-password/reset-password')
   Resetpassword(@Body() data: ResetPasswordDto) {
     return this.appService.ResetPassword(data);
   }
+  // pending
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.SUPERADMIN)
+  @Post('/serach-school')
+  SearchSchool(@Body() data: string) {
+    return this.appService.SearchSchool(data);
+    }
 
-  // tkhdm
   @Post('/logout')
   LogoutUser(req: Request) {
+   console.log("controller")
     return this.appService.Logout(req)
+  }
+
+  @UseGuards(AuthGuard,RolesGuard)
+  @Get('/profile')
+  FindProfile(@Req() req : Request) {
+    console.group("controller")
+    return this.appService.GetProfile(req);
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Put('/profile')
+  UpdateProfile(@Req() req : Request, @Body() updateData: UpdateProfileDto) {
+    console.group("controller")
+    return this.appService.UpdateProfile(req,updateData);
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Delete('/profile')
+  DeleteProfile(@Req() req : Request) {
+    console.group("controller")
+    return this.appService.DeleteProfile(req);
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Put('/profile/update-password')
+  UpdatePassword(@Req() req : Request, @Body() UpdatePassword: UpdatePasswordDto) {
+    console.group("controller")
+    return this.appService.UpdatePassword(req,UpdatePassword);
   }
 
   @UseGuards(AuthGuard, RolesGuard)
@@ -68,17 +95,35 @@ export class AppController {
 
   @UseGuards(AuthGuard,RolesGuard)
   @Roles(Role.ECOLE)
-  @Post('/add-trainer')
+  @Post('/trainer')
   AddTrainer(@Req() req : Request,@Body() formateurData: object){
     console.log(formateurData)
     return this.appService.AddTrainer(req,formateurData)
   }
   @UseGuards(AuthGuard,RolesGuard)
   @Roles(Role.ECOLE)
-  @Post('/edit-trainer')
-  EditTrainer(@Body() {id, formateurData}: {id:string, formateurData: UpdateformateurDto}){
-    console.log(formateurData)
-    return this.appService.EditTrainer(id, formateurData)
+  @Put('/trainer/:id')
+  EditTrainer(@Param('id') id:string, @Body() data: object){
+    console.log(data)
+    return this.appService.EditTrainer(id, data)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Delete('/trainer/:id')
+  DeleteTrainer(@Req() req:Request,@Param('id') id:string){
+    return this.appService.DeleteTrainer(req,id)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Get('/trainer/:id')
+  GetTrainer(@Param('id') id:string){
+    return this.appService.GetTrainer(id)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Get('/trainers')
+  GetAllTrainer(@Req() req: Request){
+    return this.appService.GetAllTrainers(req)
   }
 
 }

@@ -244,6 +244,8 @@ export class AuthService {
 
 
   async logout(req: Request) {
+    console.log("service auth")
+
     req.body['user'] = null
     req.headers['accesstoken'] = null
     req.headers['refreshtoken'] = null

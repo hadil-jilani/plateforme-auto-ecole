@@ -1,12 +1,19 @@
-import { IsString, IsEmail, MinLength, IsNotEmpty, IsNumber, IsOptional } from "class-validator";
+import { PartialType } from "@nestjs/mapped-types";
+import { IsString, IsEmail, IsOptional } from "class-validator";
+import { NewformateurDto } from "./newFormateur.dto";
 
+export class UpdateFormateurDto extends PartialType(NewformateurDto) {}
 
-export class UpdateformateurDto {
-    @IsNotEmpty()
+/* export class UpdateformateurDto {
+    @IsString()
+    @IsOptional()
     name?: string;
-    @IsNotEmpty()
+
+    @IsEmail()
+    @IsOptional()
     email?: string;
+
     @IsOptional()
     creneauxIndisponibles?: string[];
 
-}
+} */

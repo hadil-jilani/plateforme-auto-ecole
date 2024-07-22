@@ -25,7 +25,7 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
     AuthGuard,
     ConfigService,
     {
-      provide: 'register',
+      provide: 'auth',
       useFactory: (configService: ConfigService) => createRabbitMQClient('auth_queue', configService),
       inject: [ConfigService],
     },
@@ -37,6 +37,11 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
     {
       provide: 'formateur',
       useFactory: (configService: ConfigService) => createRabbitMQClient('formateur_queue', configService),
+      inject: [ConfigService],
+    },
+    {
+      provide: 'profile',
+      useFactory: (configService: ConfigService) => createRabbitMQClient('profile_queue', configService),
       inject: [ConfigService],
     },
   ],
