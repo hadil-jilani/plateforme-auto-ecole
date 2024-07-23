@@ -2,19 +2,18 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 @Schema({
     timestamps : true ,
-    collection: 'Formateurs'
+    collection: 'Apprenants'
 })
-export class FormateurModel{
+export class ApprenantModel{
     @Prop({required:true})
     ecoleId: string
     @Prop({required: true})
     name : string;
     @Prop({required: true})
     email: string
-    @Prop()
-    creneauxIndisponibles: string[]
     @Prop({required: true})
     phoneNumber: string
+
 }
-export const formateur = SchemaFactory.createForClass(FormateurModel);
+export const apprenant = SchemaFactory.createForClass(ApprenantModel);
 

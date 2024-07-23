@@ -14,6 +14,7 @@ export * from './dtos/newFormateur.dto';
 export * from './dtos/updateFormateur.dto';
 export * from './dtos/update-profile.dto';
 export * from './dtos/update-password.dto';
+export * from './dtos/new-apprenants.dto';
 
 export * from './Exceptions/rpc.exceptionFilter'
 
@@ -24,5 +25,8 @@ export * from './Schemas/ecole.schema';
 export * from './Schemas/formateur.schema';
 export * from './Schemas/role.enum';
 export * from './Schemas/status.enum';
+export * from './Schemas/apprenant.schema';
+export * from './Schemas/prestation.schema';
+export * from './Schemas/prestation-services.enum';
 
 export * from './utils/rmq';

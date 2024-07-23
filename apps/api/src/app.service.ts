@@ -11,6 +11,7 @@ export class AppService {
     @Inject('auth') private auth: ClientProxy,
     @Inject('demande') private demande: ClientProxy,
     @Inject('formateur') private formateur: ClientProxy,
+    @Inject('apprenant') private apprenant: ClientProxy,
     @Inject('profile') private profile: ClientProxy,
     private jwtservice: JwtService
   ) { }
@@ -141,6 +142,40 @@ export class AppService {
     return response;
   }
 
+  async AddLearner(req, apprenantData) {
+    const ecoleId = this.GetLoggedUserId(req)
+    const response = await this.apprenant.send('add-learner', { ecoleId, apprenantData })
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+  async EditLearner(id, apprenantData) {
+    const response = await this.apprenant.send('edit-learner', { id, apprenantData })
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+  async DeleteLearner(req, id) {
+    const ecoleId = this.GetLoggedUserId(req)
+    const response = await this.apprenant.emit('delete-learner', { ecoleId, id })
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+  async GetLearner(id) {
+    const response = await this.apprenant.send('get-learner', id)
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+
+  async GetAllLearners(req) {
+    const ecoleId = this.GetLoggedUserId(req)
+    const response = await this.apprenant.send('get-all-learners', ecoleId)
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
   GetLoggedUserId(req) {
     const token = req.headers['accesstoken'];
     const decoded = this.jwtservice.decode(token);

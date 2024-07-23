@@ -126,4 +126,38 @@ export class AppController {
     return this.appService.GetAllTrainers(req)
   }
 
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Post('/learner')
+  AddLearner(@Req() req : Request,@Body() apprenantData: object){
+    console.log(apprenantData)
+    return this.appService.AddLearner(req,apprenantData)
+  }
+  
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Put('/learner/:id')
+  EditLearner(@Param('id') id:string, @Body() apprenantData: object){
+    console.log(apprenantData)
+    return this.appService.EditLearner(id, apprenantData)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Delete('/learner/:id')
+  DeleteLearner(@Req() req:Request,@Param('id') id:string){
+    return this.appService.DeleteLearner(req,id)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Get('/learner/:id')
+  GetLearner(@Param('id') id:string){
+    return this.appService.GetLearner(id)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Get('/learners')
+  GetAllLearners(@Req() req: Request){
+    return this.appService.GetAllLearners(req)
+  }
+
 }
