@@ -9,6 +9,12 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(EmailModule);
   app.useGlobalPipes(new ValidationPipe());
   app.setViewEngine('ejs');    
+  const configservice = app.get(ConfigService)
+
+  const user = configservice.get('RABBITMQ_USER')
+  const password = configservice.get('RABBITMQ_PASS')
+  const host = configservice.get('RABBITMQ_HOST')
+  
   app.connectMicroservice({
       transport: Transport.RMQ,
       options: {
@@ -27,6 +33,17 @@ async function bootstrap() {
       },
     },
   });
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://user:password@localhost:5672'],
+      queue: 'occurrence-email',
+      queueOptions: {
+        durable: true,
+      },
+    },
+  });
+
   await app.startAllMicroservices()
 
   /* const app = await NestFactory.create(EmailModule);

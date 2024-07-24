@@ -2,7 +2,8 @@ import { OccurrenceModel } from '@app/shared';
 import { duplicateOccurrenceDto } from '@app/shared/dtos/duplicate-occurrence.dto';
 import { newOccurrenceDto } from '@app/shared/dtos/new-occurrence.dto';
 import { UpdateOccurrenceDto } from '@app/shared/dtos/update-occurrence.dto';
-import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ClientProxy } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
@@ -10,7 +11,8 @@ import mongoose from 'mongoose';
 @Injectable()
 export class OccurrencesService {
   constructor(
-    @InjectModel(OccurrenceModel.name) private Occurrence: mongoose.Model<OccurrenceModel>
+    @InjectModel(OccurrenceModel.name) private Occurrence: mongoose.Model<OccurrenceModel>,
+    @Inject('occ-email') private email: ClientProxy
   ) { }
   async addOccurrence(data) {
 
@@ -31,10 +33,13 @@ export class OccurrencesService {
       lieuRDV,
       commentaires
     })
+    const sending = await this.email.send('new-occurrence-email',{ idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+    console.log(sending)
     if (!result) {
       throw new HttpException(new NotFoundException("You cant create a new occurrence at this time please try again later ! "), 400)
     }
     else {
+      
       return "Occurrence has beed successfully created ! "
     }
   }

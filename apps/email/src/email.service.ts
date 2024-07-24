@@ -1,4 +1,4 @@
-import { activationEmailDto, EcoleModel, ForgotPasswordDto } from '@app/shared';
+import { activationEmailDto, ApprenantModel, EcoleModel, ForgotPasswordDto, FormateurModel } from '@app/shared';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,7 +10,9 @@ import { resetPwdEmailDto } from '@app/shared/dtos/resetPwdEmail.dto';
 @Injectable()
 export class EmailService {
   constructor(private mailerservice: MailerService , 
-    @InjectModel(EcoleModel.name) private Agent : mongoose.Model<EcoleModel>
+    @InjectModel(EcoleModel.name) private Ecole : mongoose.Model<EcoleModel>,
+    @InjectModel(FormateurModel.name) private Formateur : mongoose.Model<FormateurModel>,
+    @InjectModel(ApprenantModel.name) private Apprenant : mongoose.Model<ApprenantModel>
   ) {}
 
   
@@ -57,72 +59,6 @@ export class EmailService {
     });
   }
 
-
-//   async sendEmail({
-//     subject,
-//     emails,
-//     text,
-//     CampagneID,
-//     redirectUrl,
-//     template,
-//     Image
-//   } : MailerOptions2) {
-//     const trackingUrl = `https://2e73-41-226-25-110.ngrok-free.app/api/email-clicked?id=${CampagneID}&redirect=${encodeURIComponent(redirectUrl)}`;
-//     if(redirectUrl){
-//       const templatePath = `libs/shared/src/templates/${template}.ejs`;
-//     let htmlContent = fs.readFileSync(templatePath, 'utf-8');
-//     htmlContent = htmlContent
-//       .replace('{{text}}', text)
-//       .replace('{{title}}', subject)
-//       .replace('{{trackingUrl}}', trackingUrl)
-//       .replace('{{imageURL}}', Image); 
-//     try {
-//       const info = await this.mailerservice.sendMail({
-//         to: emails,
-//         subject,
-//         text,
-//         html: htmlContent,
-//       });
-//       const successEmails = info.accepted.length;
-//       const failedEmails = info.rejected.length;  
-//       await this.updateCampagneData(CampagneID, successEmails, failedEmails);
-//       return info;
-//     } catch (error) {
-//       console.error('Error sending email:', error);
-//       throw error;
-//     }
-//     }else{
-//     const templatePath = `libs/shared/src/templates/${template}_sansButton.ejs`;
-//     let htmlContent = fs.readFileSync(templatePath, 'utf-8');
-//     htmlContent = htmlContent
-//       .replace('{{title}}', subject)  
-//       .replace('{{text}}', text)  
-//       .replace('{{imageURL}}', Image); 
-//     try {
-//       const info = await this.mailerservice.sendMail({
-//         to: emails,
-//         subject,
-//         text,
-//         html: htmlContent,
-//       });
-//       const successEmails = info.accepted.length;
-//       const failedEmails = info.rejected.length; 
-//       await this.updateCampagneData(CampagneID, successEmails, failedEmails);
-//       return info;
-//     } catch (error) {
-//       console.error('Error sending email:', error);
-//       throw error;
-//     }
-//     }
-//   }
-  
-  
-
-
-
-
-
-
   async SendRequestEmail({name,subject,email}, status:string){
     let text = ""
     if (status==='refused') text=`<p>We regret to inform you that your registration request with our platform has not been accepted at this time.</p>
@@ -149,6 +85,107 @@ export class EmailService {
     text
       },
   });
+  }
+  async SendNewOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV}){
+    const apprenant = await this.Apprenant.findById(idApprenant)
+    const formateur = await this.Formateur.findById(idFormateur)
+    const subject= "New Occurrence"
+    
+    const templatePath = "libs/shared/src/templates/nouvelle-occurrence.ejs"
+    const htmlContent = fs.readFileSync(templatePath, 'utf-8')
+    .replace('{{prestation}}', prestation || '')
+    .replace('{{date}}', date || '')
+    .replace('{{lieuRDV}}', lieuRDV || '')
+    .replace('{{heureDebut}}', heureDebut || '')
+    .replace('{{heureFin}}', heureFin || '')
+
+  const mailToTrainer = await this.mailerservice.sendMail({
+    to : formateur.email,
+    subject , 
+    html: htmlContent,
+    context: {
+    name1: formateur.name,
+    name2: apprenant.name
+      },
+  });
+  const mailToLearner = await this.mailerservice.sendMail({
+    to : formateur.email,
+    subject , 
+    html: htmlContent,
+    context: {
+      name1: apprenant.name,
+      name2: formateur.name,
+      },
+  });
+  console.log(mailToLearner, mailToTrainer)
+  }
+  async SendUpdatedOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV}){
+    const apprenant = await this.Apprenant.findById(idApprenant)
+    const formateur = await this.Formateur.findById(idFormateur)
+    const subject= "Occurrence Update"
+    
+   
+    const templatePath = "libs/shared/src/templates/update-occurrence.ejs"
+    const htmlContent = fs.readFileSync(templatePath, 'utf-8')
+    .replace('{{prestation}}', prestation || '')
+    .replace('{{date}}', date || '')
+    .replace('{{lieuRDV}}', lieuRDV || '')
+    .replace('{{heureDebut}}', heureDebut || '')
+    .replace('{{heureFin}}', heureFin || '')
+
+  const mailToTrainer = await this.mailerservice.sendMail({
+    to : formateur.email,
+    subject , 
+    html: htmlContent,
+    context: {
+    name1: formateur.name,
+    name2: apprenant.name
+      },
+  });
+  const mailToLearner = await this.mailerservice.sendMail({
+    to : formateur.email,
+    subject , 
+    html: htmlContent,
+    context: {
+      name1: apprenant.name,
+      name2: formateur.name,
+      },
+  });
+  console.log(mailToLearner, mailToTrainer)
+  }
+  async SendCancelledOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV}){
+    const apprenant = await this.Apprenant.findById(idApprenant)
+    const formateur = await this.Formateur.findById(idFormateur)
+    const subject= "Occurrence Cancellation"
+    
+   
+    const templatePath = "libs/shared/src/templates/cancel-occurrence.ejs"
+    const htmlContent = fs.readFileSync(templatePath, 'utf-8')
+    .replace('{{prestation}}', prestation || '')
+    .replace('{{date}}', date || '')
+    .replace('{{lieuRDV}}', lieuRDV || '')
+    .replace('{{heureDebut}}', heureDebut || '')
+    .replace('{{heureFin}}', heureFin || '')
+
+  const mailToTrainer = await this.mailerservice.sendMail({
+    to : formateur.email,
+    subject , 
+    html: htmlContent,
+    context: {
+    name1: formateur.name,
+    name2: apprenant.name
+      },
+  });
+  const mailToLearner = await this.mailerservice.sendMail({
+    to : formateur.email,
+    subject , 
+    html: htmlContent,
+    context: {
+      name1: apprenant.name,
+      name2: formateur.name,
+      },
+  });
+  console.log(mailToLearner, mailToTrainer)
   }
 
   }

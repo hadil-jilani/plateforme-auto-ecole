@@ -28,4 +28,20 @@ export class EmailController {
     return this.emailService.SendRequestEmail({name,subject,email}, 'refused')
     }
 
+    @EventPattern('new-occurrence-email')
+  SendNewOccurrence({idApprenant, idFormateur,prestation, date, heureDebut, heureFin, lieuRDV}){
+    console.log("here")
+    return this.emailService.SendNewOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+    }
+    @EventPattern('update-occurrence-email')
+  SendUpdatedOccurrence({idApprenant, idFormateur,prestation, date, heureDebut, heureFin, lieuRDV}){
+    console.log("here")
+    return this.emailService.SendUpdatedOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+    
+  }
+  @EventPattern('cancel-occurrence-email')
+SendCancelledOccurrence({idApprenant, idFormateur,prestation, date, heureDebut, heureFin, lieuRDV}){
+  console.log("here")
+  return this.emailService.SendCancelledOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+  }
 }

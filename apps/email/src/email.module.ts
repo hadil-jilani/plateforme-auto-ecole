@@ -4,7 +4,7 @@ import { EmailService } from './email.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DatabaseModule, ecole, EcoleModel } from '@app/shared';
+import { ApprenantModel, DatabaseModule, ecole, EcoleModel, FormateurModel } from '@app/shared';
 
 @Module({
   imports: [
@@ -32,6 +32,8 @@ import { DatabaseModule, ecole, EcoleModel } from '@app/shared';
       inject: [ConfigService],
     }),
       MongooseModule.forFeature([{name : EcoleModel.name ,schema : ecole }]),
+      MongooseModule.forFeature([{name : FormateurModel.name ,schema : ecole }]),
+      MongooseModule.forFeature([{name : ApprenantModel .name ,schema : ecole }]),
       DatabaseModule,
   ],
   controllers: [EmailController],
