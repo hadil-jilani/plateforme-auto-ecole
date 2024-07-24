@@ -81,6 +81,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/profile/tsconfig.app.json"
       }
+    },
+    "occurrences": {
+      "type": "application",
+      "root": "apps/occurrences",
+      "entryFile": "main",
+      "sourceRoot": "apps/occurrences/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/occurrences/tsconfig.app.json"
+      }
     }
   }
 }

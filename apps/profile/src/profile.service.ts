@@ -18,7 +18,7 @@ export interface UserData {
 @Injectable()
 export class ProfileService {
  constructor(
-  @InjectModel(EcoleModel.name) private Ecole: mongoose.Model<EcoleModel>,
+@InjectModel(EcoleModel.name) private Ecole: mongoose.Model<EcoleModel>,
   private jwtService: JwtService
 ) {}
 

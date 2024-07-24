@@ -2,6 +2,7 @@ import { signupDto, UpdatePasswordDto, UpdateProfileDto } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
+import { LiteralExpressionOperator } from 'mongoose';
 import { throwError } from 'rxjs/internal/observable/throwError';
 import { catchError } from 'rxjs/internal/operators/catchError';
 
@@ -13,6 +14,7 @@ export class AppService {
     @Inject('formateur') private formateur: ClientProxy,
     @Inject('apprenant') private apprenant: ClientProxy,
     @Inject('profile') private profile: ClientProxy,
+    @Inject('occurrence') private occurrence: ClientProxy,
     private jwtservice: JwtService
   ) { }
 
@@ -61,6 +63,7 @@ export class AppService {
     return result
   }
 
+  // PROFILE
   async GetProfile(req: Request) {
     console.group("service")
     const id = this.GetLoggedUserId(req)
@@ -90,7 +93,14 @@ export class AppService {
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     return result
   }
+  GetLoggedUserId(req) {
+    const token = req.headers['accesstoken'];
+    const decoded = this.jwtservice.decode(token);
+    const id = decoded?.id
+    return id
+  }
 
+  // REQUESTS
   async AllRequests() {
     const response = await this.demande.send('get-all-requests', {})
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
@@ -108,6 +118,7 @@ export class AppService {
     return response;
   }
 
+  //TRAINERS
   async AddTrainer(req, formateurData) {
     const ecoleId = this.GetLoggedUserId(req)
     const response = await this.formateur.send('add-trainer', { ecoleId, formateurData })
@@ -142,6 +153,7 @@ export class AppService {
     return response;
   }
 
+  // LEARNERS
   async AddLearner(req, apprenantData) {
     const ecoleId = this.GetLoggedUserId(req)
     const response = await this.apprenant.send('add-learner', { ecoleId, apprenantData })
@@ -176,10 +188,47 @@ export class AppService {
     console.log(response)
     return response;
   }
-  GetLoggedUserId(req) {
-    const token = req.headers['accesstoken'];
-    const decoded = this.jwtservice.decode(token);
-    const id = decoded?.id
-    return id
+
+  // OCCURRENCES
+  async AddOccurrence(req, occurrenceData) {
+    const ecoleId = this.GetLoggedUserId(req)
+    const response = await this.occurrence.send('add-occurrence', { ecoleId, occurrenceData })
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
   }
+  async EditOccurrence(id, occurrenceData) {
+    const response = await this.occurrence.send('edit-occurrence', { id, occurrenceData })
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+  async DuplicateOccurrence(id,occurrenceData ) {
+    const response = await this.occurrence.send('duplicate-occurrence', { id,occurrenceData})
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+  async DeleteOccurrence(id) {
+    const response = await this.occurrence.emit('delete-occurrence',id )
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+  async GetOccurrence(id) {
+    const response = await this.occurrence.send('get-occurrence', id)
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+
+  async GetAllOccurrences(req) {
+    const ecoleId = this.GetLoggedUserId(req)
+    const response = await this.occurrence.send('get-all-occurrences', ecoleId)
+      // .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log(response)
+    return response;
+  }
+
+  
 }

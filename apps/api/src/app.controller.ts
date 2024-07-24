@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
-import { activationDto, AuthGuard, ForgotPasswordDto, loginDto, ResetPasswordDto, Role, Roles, RolesGuard, signupDto, UpdatePasswordDto, UpdateProfileDto } from '@app/shared';
-import { UpdateFormateurDto } from '@app/shared';
+import { activationDto, AuthGuard, duplicateOccurrenceDto, ForgotPasswordDto, loginDto, ResetPasswordDto, Role, Roles, RolesGuard, signupDto, UpdateOccurrenceDto, UpdatePasswordDto, UpdateProfileDto } from '@app/shared';
+import { newOccurrenceDto } from '@app/shared';
 
 @Controller('api')
 export class AppController {
@@ -93,6 +93,7 @@ export class AppController {
     return this.appService.RejectRequest(Id)
   }
 
+  // TRAINERS
   @UseGuards(AuthGuard,RolesGuard)
   @Roles(Role.ECOLE)
   @Post('/trainer')
@@ -126,6 +127,7 @@ export class AppController {
     return this.appService.GetAllTrainers(req)
   }
 
+  // LEARNERS
   @UseGuards(AuthGuard,RolesGuard)
   @Roles(Role.ECOLE)
   @Post('/learner')
@@ -160,4 +162,47 @@ export class AppController {
     return this.appService.GetAllLearners(req)
   }
 
+  // OCCURRENCES
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Post('/occurrence')
+  AddOccurrence(@Req() req : Request,@Body() occurrenceData: newOccurrenceDto){
+    console.log(occurrenceData)
+    return this.appService.AddOccurrence(req,occurrenceData)
+  }
+  
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Post('/occurrence/:id')
+  DuplicateOccurrence(@Param('id') id:string, @Body() occurrenceData: duplicateOccurrenceDto){
+    console.log(occurrenceData)
+    return this.appService.DuplicateOccurrence(id, occurrenceData)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Put('/occurrence/:id')
+  EditOccurrence(@Param('id') id:string, @Body() occurrenceData: UpdateOccurrenceDto){
+    console.log(occurrenceData)
+    return this.appService.EditOccurrence(id, occurrenceData)
+  }
+
+
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Delete('/occurrence/:id')
+  DeleteOccurrence(@Param('id') id:string){
+    return this.appService.DeleteOccurrence(id)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Get('/occurrence/:id')
+  GetOccurrence(@Param('id') id:string){
+    return this.appService.GetOccurrence(id)
+  }
+  @UseGuards(AuthGuard,RolesGuard)
+  @Roles(Role.ECOLE)
+  @Get('/occurrences')
+  GetAllOccurrences(@Req() req: Request){
+    return this.appService.GetAllOccurrences(req)
+  }
 }
