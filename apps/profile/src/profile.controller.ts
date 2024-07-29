@@ -6,18 +6,18 @@ import { MessagePattern } from '@nestjs/microservices';
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
-  @MessagePattern('get-profile')
+  @MessagePattern('get-personnal-profile')
   FindProfile(id : string ) : Promise<{user : UserData}> {
     return this.profileService.findProfile(id);
   }
 
-  @MessagePattern('delete-profile')
+  @MessagePattern('delete-personnal-profile')
   DeleteproFile( id : string) : Promise<string>{
     return this.profileService.DeleteProFile(id); 
   }
   
 
-  @MessagePattern('update-profile')
+  @MessagePattern('update-personnal-profile')
   update(data): Promise<string> {
     const {id,updateData} = data
     return this.profileService.UpdateProfile(id, updateData);

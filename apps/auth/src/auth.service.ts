@@ -242,15 +242,25 @@ export class AuthService {
   }
 
 
+  async logout(serializedReq) {
+    console.log( "test")
+    console.log("service auth");
+  console.log(serializedReq);
 
-  async logout(req: Request) {
-    console.log("service auth")
-
-    req.body['user'] = null
-    req.headers['accesstoken'] = null
-    req.headers['refreshtoken'] = null
-    return 'Logged Out successfully'
+  // Perform logout operation
+  serializedReq.body['user'] = null;
+  serializedReq.headers['accesstoken'] = null;
+  serializedReq.headers['refreshtoken'] = null;
+  return 'Logged Out successfully'
   }
+  // async logout(req: Request) {
+  //   console.log("service auth")
+
+  //   req.body['user'] = null
+  //   req.headers['accesstoken'] = null
+  //   req.headers['refreshtoken'] = null
+  //   return 'Logged Out successfully'
+  // }
 
 
 

@@ -1,6 +1,6 @@
-import { FormateurModel, NewformateurDto } from '@app/shared';
-import { BadRequestException, HttpException, Injectable, NotFoundException } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
+import { FormateurModel, NewformateurDto, AgendaModel } from '@app/shared';
+import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
@@ -8,7 +8,9 @@ import mongoose from 'mongoose';
 @Injectable()
 export class FormateursService {
   constructor(
-    @InjectModel(FormateurModel.name) private Formateur: mongoose.Model<FormateurModel>
+    @InjectModel(FormateurModel.name) private Formateur: mongoose.Model<FormateurModel>,
+    @InjectModel(AgendaModel.name) private Profile: mongoose.Model<AgendaModel>,
+    @Inject('test2') private test: ClientProxy
   ) { }
 
 
@@ -76,6 +78,22 @@ export class FormateursService {
 
   async getAllTrainers(ecoleId) {
 const formateurs = await this.Formateur.find({ecoleId:ecoleId})
+if (!formateurs) {
+  throw new HttpException(new NotFoundException("You cant get trainers at this time please try again later"),404)
+    }
+    this.test.emit('test2', {})
+    return formateurs
+}
+  async getTrainersByProfile(data) {
+    const {ecoleId, id} = data
+    const profile = await this.Profile.findById(id)
+    if(!profile) {
+      throw new HttpException(new NotFoundException("No profile was found"),404)
+    }
+    console.log(profile)
+    const idList = profile["formateursId"]
+    console.log(idList)
+    const formateurs = await this.Formateur.find({_id: {$in:idList}})
 if (!formateurs) {
   throw new HttpException(new NotFoundException("You cant get trainers at this time please try again later"),404)
     }

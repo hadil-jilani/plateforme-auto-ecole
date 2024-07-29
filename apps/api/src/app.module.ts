@@ -54,6 +54,11 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
       useFactory: (configService: ConfigService) => createRabbitMQClient('occurrence_queue', configService),
       inject: [ConfigService],
     },
+    {
+      provide: 'agenda',
+      useFactory: (configService: ConfigService) => createRabbitMQClient('agenda_queue', configService),
+      inject: [ConfigService],
+    },
   ],
 })
 export class AppModule { }

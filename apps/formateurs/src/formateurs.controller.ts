@@ -29,13 +29,19 @@ export class FormateursController {
   @MessagePattern('get-trainer')
   async getTrainer(id) {
     // const id = data["id"]
-    console.log("delete", id)
     return this.formateursService.getTrainer(id);
     }
   @MessagePattern('get-all-trainers')
   async getAllTrainers(ecoleId) {
     // const ecoleId = data["ecoleId"]
-    console.log("delete", ecoleId)
     return this.formateursService.getAllTrainers(ecoleId);
     }
+  @MessagePattern('get-trainers-profile')
+  async getTrainersByProfile(data:any) {
+    return this.formateursService.getTrainersByProfile(data);
+    }
+  // @EventPattern('new-occurrence-email')
+  // async test(data:any) {
+  //   console.log ("test");
+  //   }
 }

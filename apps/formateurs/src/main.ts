@@ -14,6 +14,17 @@ async function bootstrap() {
         }
     }
   }
+)
+  app.connectMicroservice({
+    transport: Transport.RMQ,
+    options: {
+      urls: ['amqp://user:password@localhost:5672'],
+      queue: 'test',
+      queueOptions: {
+        durable: true
+        }
+    }
+  }
 );
 await app.startAllMicroservices();
 }

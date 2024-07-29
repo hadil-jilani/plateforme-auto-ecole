@@ -52,9 +52,9 @@ export class AuthController {
 
 
     @EventPattern('logout-user')
-    logoutUser(req : Request){
+    logoutUser(serializedReq: { body: any; headers: any }){
         console.log("controller auth")
-        return this.authservice.logout(req)
+        return this.authservice.logout(serializedReq)
     }
    
 }

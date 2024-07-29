@@ -1,4 +1,4 @@
-import { EcoleModel, UpdatePasswordDto, UpdateProfileDto } from '@app/shared';
+import { EcoleModel, UpdatePasswordDto, UpdatePersonnalProfileDto } from '@app/shared';
 import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -43,7 +43,7 @@ async DeleteProFile(id : string): Promise<string> {
  
   }
 
-  async UpdateProfile(id : string, updateData: UpdateProfileDto): Promise<string>
+  async UpdateProfile(id : string, updateData: UpdatePersonnalProfileDto): Promise<string>
   {
     const {name,email,phoneNumber,adresse} = updateData; 
   
@@ -53,7 +53,7 @@ async DeleteProFile(id : string): Promise<string> {
     }
     const updatedFields = {};
 
-  // Mettre à jour seulement les champs qui sont fournis dans updateProfileDto
+  // Mettre à jour seulement les champs qui sont fournis dans UpdatePersonnalProfileDto
   if (name) {
     updatedFields['name'] = name;
   }

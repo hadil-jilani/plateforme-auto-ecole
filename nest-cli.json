@@ -90,6 +90,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/occurrences/tsconfig.app.json"
       }
+    },
+    "agenda": {
+      "type": "application",
+      "root": "apps/agenda",
+      "entryFile": "main",
+      "sourceRoot": "apps/agenda/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/agenda/tsconfig.app.json"
+      }
     }
   }
 }

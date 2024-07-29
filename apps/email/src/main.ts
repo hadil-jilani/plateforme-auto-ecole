@@ -24,6 +24,22 @@ async function bootstrap() {
     }
   );
   app.connectMicroservice({
+      transport: Transport.RMQ,
+      options: {
+        urls: ['amqp://user:password@localhost:5672'],
+        queue:'test-form'
+      }
+    }
+  );
+  app.connectMicroservice({
+      transport: Transport.RMQ,
+      options: {
+        urls: ['amqp://user:password@localhost:5672'],
+        queue: 'new-email'
+      }
+    }
+  );
+  app.connectMicroservice({
     transport: Transport.RMQ,
     options: {
       urls: ['amqp://user:password@localhost:5672'],
@@ -37,7 +53,7 @@ async function bootstrap() {
     transport: Transport.RMQ,
     options: {
       urls: ['amqp://user:password@localhost:5672'],
-      queue: 'occurrence-email',
+      queue: 'occ-email',
       queueOptions: {
         durable: true,
       },

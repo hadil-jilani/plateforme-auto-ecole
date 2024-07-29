@@ -1,4 +1,4 @@
-import { OccurrenceModel } from '@app/shared';
+import { OccurrenceModel, occurrence } from '@app/shared';
 import { duplicateOccurrenceDto } from '@app/shared/dtos/duplicate-occurrence.dto';
 import { newOccurrenceDto } from '@app/shared/dtos/new-occurrence.dto';
 import { UpdateOccurrenceDto } from '@app/shared/dtos/update-occurrence.dto';
@@ -12,7 +12,8 @@ import mongoose from 'mongoose';
 export class OccurrencesService {
   constructor(
     @InjectModel(OccurrenceModel.name) private Occurrence: mongoose.Model<OccurrenceModel>,
-    @Inject('occ-email') private email: ClientProxy
+    @Inject('email') private email: ClientProxy,
+    @Inject('test') private test: ClientProxy,
   ) { }
   async addOccurrence(data) {
 
@@ -33,8 +34,9 @@ export class OccurrencesService {
       lieuRDV,
       commentaires
     })
-    const sending = await this.email.send('new-occurrence-email',{ idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
-    console.log(sending)
+    this.email.send('new-occurrence-email',{ idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+    const res = this.test.emit('new-occurrence-email',{ })
+    console.log(res)
     if (!result) {
       throw new HttpException(new NotFoundException("You cant create a new occurrence at this time please try again later ! "), 400)
     }
@@ -110,5 +112,48 @@ export class OccurrencesService {
     })
     return result;
 
+  }
+  async getOccurrencesForOneDay(data) {
+    const {ecoleId, date} = data
+    const occurrences = await this.Occurrence.find({ ecoleId:ecoleId, date:date })
+    console.log(occurrences)
+    if (!occurrences) {
+      throw new HttpException(new NotFoundException("You cant get occurrences at this time please try again later"), 404)
+    }
+    return occurrences
+  }
+  async getOccurrencesForDateRange(data) {
+    const {ecoleId,  startDate, endDate} = data
+    console.log(startDate, "  " ,endDate)
+    const occurrences = await this.Occurrence.find({ ecoleId:ecoleId, date: { $gte: startDate, $lte: endDate } })
+    console.log(occurrences)
+    if (!occurrences) {
+      throw new HttpException(new NotFoundException("You cant get occurrences at this time please try again later"), 404)
+    }
+    // const occurrencesByDate: Record<string, OccurrenceModel[]> = {};
+
+    // occurrences.forEach(occurrence => {
+    //   const date = occurrence.date;
+    //   if (!occurrencesByDate[date]) {
+    //     occurrencesByDate[date] = [];
+    //   }
+    //   occurrencesByDate[date].push(occurrence);
+    // });
+
+    // return occurrencesByDate;
+    return occurrences
+  }
+
+  async getByTrainersAndDay(data){
+    const {ecoleId, trainersId, date} = data
+    const occurrences = await this.Occurrence.find({idFormateur: { $in: trainersId },date: date})
+    console.log(occurrences)
+    return occurrences
+  }
+  async getByTrainersAndRange(data){
+    const {ecoleId, trainersId, startDate, endDate} = data
+    const occurrences = await this.Occurrence.find({idFormateur: { $in: trainersId },date: { $gte :startDate, $lte:endDate}})
+    console.log(occurrences)
+    return occurrences
   }
 }

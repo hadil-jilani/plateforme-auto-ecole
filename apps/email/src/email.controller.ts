@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { EmailService } from './email.service';
-import { EventPattern } from '@nestjs/microservices';
+import { EventPattern, MessagePattern } from '@nestjs/microservices';
 import { acceptationEmailDto, activationEmailDto, ForgotPasswordDto } from '@app/shared'
 import { resetPwdEmailDto } from '@app/shared/dtos/resetPwdEmail.dto';
 
@@ -28,7 +28,7 @@ export class EmailController {
     return this.emailService.SendRequestEmail({name,subject,email}, 'refused')
     }
 
-    @EventPattern('new-occurrence-email')
+    @MessagePattern('new-occurrence-email')
   SendNewOccurrence({idApprenant, idFormateur,prestation, date, heureDebut, heureFin, lieuRDV}){
     console.log("here")
     return this.emailService.SendNewOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
@@ -43,5 +43,10 @@ export class EmailController {
 SendCancelledOccurrence({idApprenant, idFormateur,prestation, date, heureDebut, heureFin, lieuRDV}){
   console.log("here")
   return this.emailService.SendCancelledOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+  }
+  @EventPattern('test2')
+test(){
+  console.log("here")
+  
   }
 }

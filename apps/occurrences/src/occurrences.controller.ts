@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { EventPattern, MessagePattern } from '@nestjs/microservices';
 import { OccurrencesService } from './occurrences.service';
+import { DateRangeDto } from '@app/shared';
+import { OccurrenceDayDto } from '@app/shared/dtos/occurrence-day.dto';
 
 @Controller()
 export class OccurrencesController {
@@ -30,6 +32,26 @@ export class OccurrencesController {
   @EventPattern('duplicate-occurrence')
   DuplicateOccurrence(data){
     return this.occurrencesService.duplicateOccurrence(data);
+  }
+  @MessagePattern('get-day-occurrences')
+  getOccurrencesForOneDay(data: OccurrenceDayDto){
+    console.log("here")
+    return this.occurrencesService.getOccurrencesForOneDay(data);
+  }
+  @MessagePattern('get-range-occurrences')
+  getOccurrencesForDateRange(data:DateRangeDto){
+    console.log("here")
+    return this.occurrencesService.getOccurrencesForDateRange(data);
+  }
+  @MessagePattern('get-trainers-day')
+  getByTrainersAndDay(data:any){
+    console.log("here")
+    return this.occurrencesService.getByTrainersAndDay(data);
+  }
+  @MessagePattern('get-trainers-range')
+  getByTrainersAndRange(data:any){
+    console.log("here")
+    return this.occurrencesService.getByTrainersAndRange(data);
   }
 
 }
