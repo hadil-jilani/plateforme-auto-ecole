@@ -21,7 +21,7 @@ export * from './dtos/update-occurrence.dto';
 export * from './dtos/duplicate-occurrence.dto';
 export * from './dtos/date-range.dto';
 
-export * from './Exceptions/rpc.exceptionFilter'
+export * from './filters/rpc.exceptionFilter'
 
 export * from './Guards/auth.guard'
 export * from './Guards/roles.guard'

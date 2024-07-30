@@ -39,6 +39,12 @@ export class AppController {
   Resetpassword(@Body() data: ResetPasswordDto) {
     return this.appService.ResetPassword(data);
   }
+  
+  @Post('/logout')
+  LogoutUser(@Req() req: Request) {
+    console.log("controller")
+    return this.appService.Logout(req)
+  }
   // pending
   // @UseGuards(AuthGuard, RolesGuard)
   // @Roles(Role.SUPERADMIN)
@@ -46,12 +52,6 @@ export class AppController {
   // SearchSchool(@Body() data: string) {
   //   return this.appService.SearchSchool(data);
   // }
-
-  @Post('/logout')
-  LogoutUser(@Req() req: Request) {
-    console.log("controller")
-    return this.appService.Logout(req)
-  }
   /* 
   **********
 

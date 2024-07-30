@@ -99,6 +99,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/agenda/tsconfig.app.json"
       }
+    },
+    "apprenants": {
+      "type": "application",
+      "root": "apps/apprenants",
+      "entryFile": "main",
+      "sourceRoot": "apps/apprenants/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/apprenants/tsconfig.app.json"
+      }
     }
   }
 }
