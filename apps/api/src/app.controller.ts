@@ -87,7 +87,7 @@ export class AppController {
   /* 
   **********
 
-    Demandes
+    Requests
 
   **********
   */
@@ -123,9 +123,9 @@ export class AppController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
   @Post('/trainer')
-  AddTrainer(@Req() req: Request, @Body() formateurData: object) {
-    console.log(formateurData)
-    return this.appService.AddTrainer(req, formateurData)
+  AddTrainer(@Req() req: Request, @Body() trainerData: object) {
+    console.log(trainerData)
+    return this.appService.AddTrainer(req, trainerData)
   }
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
@@ -169,17 +169,17 @@ export class AppController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
   @Post('/learner')
-  AddLearner(@Req() req: Request, @Body() apprenantData: object) {
-    console.log(apprenantData)
-    return this.appService.AddLearner(req, apprenantData)
+  AddLearner(@Req() req: Request, @Body() learnerData: object) {
+    console.log(learnerData)
+    return this.appService.AddLearner(req, learnerData)
   }
 
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
   @Put('/learner/:id')
-  EditLearner(@Param('id') id: string, @Body() apprenantData: object) {
-    console.log(apprenantData)
-    return this.appService.EditLearner(id, apprenantData)
+  EditLearner(@Param('id') id: string, @Body() learnerData: object) {
+    console.log(learnerData)
+    return this.appService.EditLearner(id, learnerData)
   }
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)

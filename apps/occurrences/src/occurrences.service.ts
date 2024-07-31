@@ -20,13 +20,13 @@ export class OccurrencesService {
     const occurrenceData: newOccurrenceDto = data['occurrenceData']
     console.log(occurrenceData)
     const ecoleId = data['ecoleId']
-    const { idFormateur, idApprenant, prestation, date, heureDebut, heureFin, lieuRDV, commentaires } = occurrenceData;
+    const { idTrainer, idLearner, prestation, date, heureDebut, heureFin, lieuRDV, commentaires } = occurrenceData;
 
 
     const result = await this.Occurrence.create({
       ecoleId,
-      idFormateur,
-      idApprenant,
+      idTrainer,
+      idLearner,
       prestation,
       date,
       heureDebut,
@@ -34,7 +34,7 @@ export class OccurrencesService {
       lieuRDV,
       commentaires
     })
-    this.email.send('new-occurrence-email',{ idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV})
+    this.email.send('new-occurrence-email',{ idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV})
     const res = this.test.emit('new-occurrence-email',{ })
     console.log(res)
     if (!result) {
@@ -98,11 +98,11 @@ export class OccurrencesService {
     if (!oldOccurrence) {
       throw new HttpException(new NotFoundException("You cant duplicate a occurrence at this time please try again later "), 404)
     }
-    const {ecoleId, idFormateur, idApprenant, prestation, lieuRDV, commentaires } = oldOccurrence;
+    const {ecoleId, idTrainer, idLearner, prestation, lieuRDV, commentaires } = oldOccurrence;
     const result = await this.Occurrence.create({
       ecoleId,
-      idFormateur,
-      idApprenant,
+      idTrainer,
+      idLearner,
       prestation,
       date,
       heureDebut,
@@ -146,13 +146,13 @@ export class OccurrencesService {
 
   async getByTrainersAndDay(data){
     const {ecoleId, trainersId, date} = data
-    const occurrences = await this.Occurrence.find({idFormateur: { $in: trainersId },date: date})
+    const occurrences = await this.Occurrence.find({idTrainer: { $in: trainersId },date: date})
     console.log(occurrences)
     return occurrences
   }
   async getByTrainersAndRange(data){
     const {ecoleId, trainersId, startDate, endDate} = data
-    const occurrences = await this.Occurrence.find({idFormateur: { $in: trainersId },date: { $gte :startDate, $lte:endDate}})
+    const occurrences = await this.Occurrence.find({idTrainer: { $in: trainersId },date: { $gte :startDate, $lte:endDate}})
     console.log(occurrences)
     return occurrences
   }

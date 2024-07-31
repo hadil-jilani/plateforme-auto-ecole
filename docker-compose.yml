@@ -62,10 +62,10 @@ services:
   #     - /usr/src/app/node_modules
   #   command: npm run start:dev email # overrides CMD from Dockerfile
 
-  # demandes:
+  # requests:
   #   build:
   #     context: ./
-  #     dockerfile: ./apps/demandes/Dockerfile
+  #     dockerfile: ./apps/requests/Dockerfile
   #   env_file:
   #     - .env
   #   depends_on:
@@ -74,4 +74,4 @@ services:
   #   volumes:
   #     - .:/usr/src/app
   #     - /usr/src/app/node_modules
-  #   command: npm run start:dev demandes # overrides CMD from Dockerfile
+  #   command: npm run start:dev requests # overrides CMD from Dockerfile

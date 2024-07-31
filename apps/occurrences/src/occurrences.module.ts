@@ -21,7 +21,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
           transport: Transport.RMQ,
           options: {
             urls: ['amqp://user:password@localhost:5672'],
-            queue: 'formateur_queue',
+            queue: 'trainer_queue',
             queueOptions: {
               durable : true
             },
@@ -42,7 +42,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     },
     {
       provide: 'test',
-      useFactory: (configService: ConfigService) => createRabbitMQClient( 'formateur_queue', configService),
+      useFactory: (configService: ConfigService) => createRabbitMQClient( 'trainer_queue', configService),
       inject: [ConfigService],
     }
   ]

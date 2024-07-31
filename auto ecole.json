@@ -584,7 +584,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"prestation\": \"code\",\n  \"date\": \"2024-15-07\",\n  \"heureDebut\": \"15:30\",\n  \"heureFin\": \"17:30\",\n  \"lieuRDV\": \"mahdia\",\n  \"commentaires\": \"test\",\n  \"idFormateur\": \"669e347676b12476032bc224\",\n  \"ecoleId\": \"669e65c9b56e5e56b6958778\",\n  \"idApprenant\": \"669f6b319d682f249bc97437\"\n  \n}",
+                "raw": "{\n  \"prestation\": \"code\",\n  \"date\": \"2024-15-07\",\n  \"heureDebut\": \"15:30\",\n  \"heureFin\": \"17:30\",\n  \"lieuRDV\": \"mahdia\",\n  \"commentaires\": \"test\",\n  \"idTrainer\": \"669e347676b12476032bc224\",\n  \"ecoleId\": \"669e65c9b56e5e56b6958778\",\n  \"idLearner\": \"669f6b319d682f249bc97437\"\n  \n}",
                 "form": []
             }
         },
@@ -793,7 +793,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\"formateursId\":[\"669e0c602614581765dd95e9\"]}",
+                "raw": "{\"trainersId\":[\"669e0c602614581765dd95e9\"]}",
                 "form": []
             }
         },

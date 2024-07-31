@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthGuard, DatabaseModule, ecole, EcoleModel, formateur, FormateurModel } from '@app/shared';
+import { AuthGuard, DatabaseModule, ecole, EcoleModel, trainer, TrainerModel } from '@app/shared';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';

@@ -21,14 +21,14 @@ export class OccurrenceModel {
     @Prop({})
     commentaires: string
     // by putting the ref here we'r saying that this document is related to an other document in an other collection (agents)   
-    @Prop({required:true, type : mongoose.Schema.Types.ObjectId , ref : 'FormateurModel'})
-    idFormateur : mongoose.Schema.Types.ObjectId
+    @Prop({required:true, type : mongoose.Schema.Types.ObjectId , ref : 'TrainerModel'})
+    idTrainer : mongoose.Schema.Types.ObjectId
     
     @Prop({required:true, type : mongoose.Schema.Types.ObjectId , ref : 'EcoleModel'})
     ecoleId : mongoose.Schema.Types.ObjectId
 
-    @Prop({required:true, type : mongoose.Schema.Types.ObjectId , ref : 'ApprenantModel'})
-    idApprenant : mongoose.Schema.Types.ObjectId
+    @Prop({required:true, type : mongoose.Schema.Types.ObjectId , ref : 'LearnerModel'})
+    idLearner : mongoose.Schema.Types.ObjectId
 
 }
 

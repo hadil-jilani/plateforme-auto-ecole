@@ -7,20 +7,20 @@ import mongoose from 'mongoose';
 @Injectable()
 export class AgendaService {
   constructor(
-    @InjectModel(AgendaModel.name) private profile: mongoose.Model<AgendaModel>
+    @InjectModel(AgendaModel.name) private agenda: mongoose.Model<AgendaModel>
   ) {}
 
   async addProfile(data) {
     const ecoleId: string = data['ecoleId']
     const {name,trainersId} = data['agendaData']
-    const isProfileExist = await this.profile.findOne({name:name})
+    const isProfileExist = await this.agenda.findOne({name:name})
     if(isProfileExist){
       throw new HttpException(new BadRequestException('agenda already exist'), 400)
     }
-    const result = await this.profile.create({
+    const result = await this.agenda.create({
       ecoleId,
       name,
-      formateursId:trainersId
+      trainersId:trainersId
     })
     return result
     // if (!result) {
@@ -34,11 +34,11 @@ export class AgendaService {
   async editProfile(data) {
     const id: string = data['id']
     const agendaData = data['agendaData']
-    const profile = await this.profile.findByIdAndUpdate(id, agendaData, { new: true });
-    if (!profile) {
+    const agenda = await this.agenda.findByIdAndUpdate(id, agendaData, { new: true });
+    if (!agenda) {
       throw new NotFoundException(`Profile #${id} not found`);
     }
-    return profile;
+    return agenda;
 
   }
   async deleteProfile(id,ecoleId) {
@@ -46,33 +46,33 @@ export class AgendaService {
     const Id = new ObjectId(id)
     const EcoleId = new ObjectId(ecoleId)
     console.log(id, " ", ecoleId)
-    const profile = await this.profile.findOne({_id:Id, ecoleId: EcoleId})
+    const agenda = await this.agenda.findOne({_id:Id, ecoleId: EcoleId})
 
-    if (!profile) {
-      throw new HttpException(new NotFoundException("You cant delete a profile at this time please try again later"), 404);
+    if (!agenda) {
+      throw new HttpException(new NotFoundException("You cant delete a agenda at this time please try again later"), 404);
     }
-    const result = await  this.profile.deleteOne({_id:Id, ecoleId: EcoleId})
+    const result = await  this.agenda.deleteOne({_id:Id, ecoleId: EcoleId})
   if (!result){
     throw new HttpException(new NotFoundException("somthing went wrong please try again ! "),400)
   }
-  console.log(profile)
-  console.log("profile has beed successfully deleted ! ")
+  console.log(agenda)
+  console.log("agenda has beed successfully deleted ! ")
 }
   
 
   async getProfile(id) {
-    const profile = await this.profile.findById(id);
-    if (!profile) {
-      throw new HttpException(new NotFoundException("You cant get a profile at this time please try again later"),400)
+    const agenda = await this.agenda.findById(id);
+    if (!agenda) {
+      throw new HttpException(new NotFoundException("You cant get a agenda at this time please try again later"),400)
     }
-    return profile
+    return agenda
   }
 
   async getAllProfiles(ecoleId) {
-const profiles = await this.profile.find({ecoleId:ecoleId})
-if (!profiles) {
-  throw new HttpException(new NotFoundException("You cant get profiles at this time please try again later"),404)
+const agendas = await this.agenda.find({ecoleId:ecoleId})
+if (!agendas) {
+  throw new HttpException(new NotFoundException("You cant get agendas at this time please try again later"),404)
     }
-    return profiles
+    return agendas
 }
 }

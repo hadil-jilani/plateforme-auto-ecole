@@ -5,12 +5,12 @@ export class newOccurrenceDto {
 
     @IsNotEmpty()
     @IsString()
-    idFormateur: string
+    idTrainer: string
 
     
     @IsNotEmpty()
     @IsString()
-    idApprenant: string
+    idLearner: string
 
     @IsNotEmpty()
     @IsString()

@@ -30,13 +30,13 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
       inject: [ConfigService],
     },
     {
-      provide: 'demande',
-      useFactory: (configService: ConfigService) => createRabbitMQClient('demande_queue', configService),
+      provide: 'request',
+      useFactory: (configService: ConfigService) => createRabbitMQClient('request_queue', configService),
       inject: [ConfigService],
     },
     {
-      provide: 'formateur',
-      useFactory: (configService: ConfigService) => createRabbitMQClient('formateur_queue', configService),
+      provide: 'trainer',
+      useFactory: (configService: ConfigService) => createRabbitMQClient('trainer_queue', configService),
       inject: [ConfigService],
     },
     {
@@ -45,8 +45,8 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
       inject: [ConfigService],
     },
     {
-      provide: 'apprenant',
-      useFactory: (configService: ConfigService) => createRabbitMQClient('apprenant_queue', configService),
+      provide: 'learner',
+      useFactory: (configService: ConfigService) => createRabbitMQClient('learner_queue', configService),
       inject: [ConfigService],
     },
     {

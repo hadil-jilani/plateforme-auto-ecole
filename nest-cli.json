@@ -46,13 +46,13 @@
         "tsConfigPath": "apps/api/tsconfig.app.json"
       }
     },
-    "demandes": {
+    "requests": {
       "type": "application",
-      "root": "apps/demandes",
+      "root": "apps/requests",
       "entryFile": "main",
-      "sourceRoot": "apps/demandes/src",
+      "sourceRoot": "apps/requests/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/demandes/tsconfig.app.json"
+        "tsConfigPath": "apps/requests/tsconfig.app.json"
       }
     },
     "email": {
@@ -64,13 +64,13 @@
         "tsConfigPath": "apps/email/tsconfig.app.json"
       }
     },
-    "formateurs": {
+    "trainers": {
       "type": "application",
-      "root": "apps/formateurs",
+      "root": "apps/trainers",
       "entryFile": "main",
-      "sourceRoot": "apps/formateurs/src",
+      "sourceRoot": "apps/trainers/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/formateurs/tsconfig.app.json"
+        "tsConfigPath": "apps/trainers/tsconfig.app.json"
       }
     },
     "profile": {
@@ -100,13 +100,13 @@
         "tsConfigPath": "apps/agenda/tsconfig.app.json"
       }
     },
-    "apprenants": {
+    "learners": {
       "type": "application",
-      "root": "apps/apprenants",
+      "root": "apps/learners",
       "entryFile": "main",
-      "sourceRoot": "apps/apprenants/src",
+      "sourceRoot": "apps/learners/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/apprenants/tsconfig.app.json"
+        "tsConfigPath": "apps/learners/tsconfig.app.json"
       }
     }
   }

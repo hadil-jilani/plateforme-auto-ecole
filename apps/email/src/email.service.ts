@@ -1,4 +1,4 @@
-import { activationEmailDto, ApprenantModel, EcoleModel, ForgotPasswordDto, FormateurModel } from '@app/shared';
+import { activationEmailDto, LearnerModel, EcoleModel, ForgotPasswordDto, TrainerModel } from '@app/shared';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -11,8 +11,8 @@ import { resetPwdEmailDto } from '@app/shared/dtos/resetPwdEmail.dto';
 export class EmailService {
   constructor(private mailerservice: MailerService , 
     @InjectModel(EcoleModel.name) private Ecole : mongoose.Model<EcoleModel>,
-    @InjectModel(FormateurModel.name) private Formateur : mongoose.Model<FormateurModel>,
-    @InjectModel(ApprenantModel.name) private Apprenant : mongoose.Model<ApprenantModel>
+    @InjectModel(TrainerModel.name) private Trainer : mongoose.Model<TrainerModel>,
+    @InjectModel(LearnerModel.name) private Learner : mongoose.Model<LearnerModel>
   ) {}
 
   
@@ -86,9 +86,9 @@ export class EmailService {
       },
   });
   }
-  async SendNewOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV}){
-    const apprenant = await this.Apprenant.findById(idApprenant)
-    const formateur = await this.Formateur.findById(idFormateur)
+  async SendNewOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV}){
+    const learner = await this.Learner.findById(idLearner)
+    const trainer = await this.Trainer.findById(idTrainer)
     const subject= "New Occurrence"
     
     const templatePath = "libs/shared/src/templates/nouvelle-occurrence.ejs"
@@ -100,28 +100,28 @@ export class EmailService {
     .replace('{{heureFin}}', heureFin || '')
 
   const mailToTrainer = await this.mailerservice.sendMail({
-    to : formateur.email,
+    to : trainer.email,
     subject , 
     html: htmlContent,
     context: {
-    name1: formateur.name,
-    name2: apprenant.name
+    name1: trainer.name,
+    name2: learner.name
       },
   });
   const mailToLearner = await this.mailerservice.sendMail({
-    to : formateur.email,
+    to : trainer.email,
     subject , 
     html: htmlContent,
     context: {
-      name1: apprenant.name,
-      name2: formateur.name,
+      name1: learner.name,
+      name2: trainer.name,
       },
   });
   console.log(mailToLearner, mailToTrainer)
   }
-  async SendUpdatedOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV}){
-    const apprenant = await this.Apprenant.findById(idApprenant)
-    const formateur = await this.Formateur.findById(idFormateur)
+  async SendUpdatedOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV}){
+    const learner = await this.Learner.findById(idLearner)
+    const trainer = await this.Trainer.findById(idTrainer)
     const subject= "Occurrence Update"
     
    
@@ -134,28 +134,28 @@ export class EmailService {
     .replace('{{heureFin}}', heureFin || '')
 
   const mailToTrainer = await this.mailerservice.sendMail({
-    to : formateur.email,
+    to : trainer.email,
     subject , 
     html: htmlContent,
     context: {
-    name1: formateur.name,
-    name2: apprenant.name
+    name1: trainer.name,
+    name2: learner.name
       },
   });
   const mailToLearner = await this.mailerservice.sendMail({
-    to : formateur.email,
+    to : trainer.email,
     subject , 
     html: htmlContent,
     context: {
-      name1: apprenant.name,
-      name2: formateur.name,
+      name1: learner.name,
+      name2: trainer.name,
       },
   });
   console.log(mailToLearner, mailToTrainer)
   }
-  async SendCancelledOccurrence({idApprenant, idFormateur, prestation, date, heureDebut, heureFin, lieuRDV}){
-    const apprenant = await this.Apprenant.findById(idApprenant)
-    const formateur = await this.Formateur.findById(idFormateur)
+  async SendCancelledOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV}){
+    const learner = await this.Learner.findById(idLearner)
+    const trainer = await this.Trainer.findById(idTrainer)
     const subject= "Occurrence Cancellation"
     
    
@@ -168,21 +168,21 @@ export class EmailService {
     .replace('{{heureFin}}', heureFin || '')
 
   const mailToTrainer = await this.mailerservice.sendMail({
-    to : formateur.email,
+    to : trainer.email,
     subject , 
     html: htmlContent,
     context: {
-    name1: formateur.name,
-    name2: apprenant.name
+    name1: trainer.name,
+    name2: learner.name
       },
   });
   const mailToLearner = await this.mailerservice.sendMail({
-    to : formateur.email,
+    to : trainer.email,
     subject , 
     html: htmlContent,
     context: {
-      name1: apprenant.name,
-      name2: formateur.name,
+      name1: learner.name,
+      name2: trainer.name,
       },
   });
   console.log(mailToLearner, mailToTrainer)

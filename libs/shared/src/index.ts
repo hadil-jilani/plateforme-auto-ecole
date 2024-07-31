@@ -11,11 +11,11 @@ export * from './dtos/resetPwd.dto';
 export * from './dtos/resetPwdEmail.dto';
 export * from './dtos/signup.dto';
 export * from './dtos/acceptationEmail.dto';
-export * from './dtos/newFormateur.dto';
-export * from './dtos/updateFormateur.dto';
+export * from './dtos/new-trainer.dto';
+export * from './dtos/update-trainer.dto';
 export * from './dtos/update-personnal-profile.dto';
 export * from './dtos/update-password.dto';
-export * from './dtos/new-apprenants.dto';
+export * from './dtos/new-learners.dto';
 export * from './dtos/new-occurrence.dto';
 export * from './dtos/update-occurrence.dto';
 export * from './dtos/duplicate-occurrence.dto';
@@ -27,11 +27,11 @@ export * from './Guards/auth.guard'
 export * from './Guards/roles.guard'
 
 export * from './Schemas/ecole.schema';
-export * from './Schemas/formateur.schema';
+export * from './Schemas/trainer.schema';
 export * from './Schemas/agenda.schema';
 export * from './Schemas/role.enum';
 export * from './Schemas/status.enum';
-export * from './Schemas/apprenant.schema';
+export * from './Schemas/learner.schema';
 export * from './Schemas/occurrence.schema';
 export * from './Schemas/prestation.enum';
 

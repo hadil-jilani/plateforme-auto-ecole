@@ -1,5 +1,5 @@
 import { signupDto, UpdatePasswordDto, UpdatePersonnalProfileDto } from '@app/shared';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { LiteralExpressionOperator } from 'mongoose';
@@ -10,9 +10,9 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 export class AppService {
   constructor(
     @Inject('auth') private auth: ClientProxy,
-    @Inject('demande') private demande: ClientProxy,
-    @Inject('formateur') private formateur: ClientProxy,
-    @Inject('apprenant') private apprenant: ClientProxy,
+    @Inject('request') private request: ClientProxy,
+    @Inject('trainer') private trainer: ClientProxy,
+    @Inject('learner') private learner: ClientProxy,
     @Inject('profile') private profile: ClientProxy,
     @Inject('occurrence') private occurrence: ClientProxy,
     @Inject('agenda') private agenda: ClientProxy,
@@ -103,95 +103,106 @@ export class AppService {
     return result
   }
   GetLoggedUserId(req) {
-    const token = req.headers['accesstoken'];
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      throw new UnauthorizedException('Authorization header not found!');
+    }
+  
+    const [bearer, token] = authHeader.split(' ');
+    if (bearer !== 'Bearer' || !token) {
+      throw new UnauthorizedException('Invalid token format!');
+    }
+  
     const decoded = this.jwtservice.decode(token);
-    const id = decoded?.id
-    return id
+    const id = decoded?.id;
+    
+    return id;
   }
+  
 
   // REQUESTS
   async AllRequests() {
-    const response = await this.demande.send('get-all-requests', {})
+    const response = await this.request.send('get-all-requests', {})
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     return response;
   }
 
   async AcceptRequest(id) {
-    const response = await this.demande.emit('accept-request', id)
+    const response = await this.request.emit('accept-request', id)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     return response;
   }
   async RejectRequest(id) {
-    const response = await this.demande.emit('reject-request', id)
+    const response = await this.request.emit('reject-request', id)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     return response;
   }
 
   //TRAINERS
-  async AddTrainer(req, formateurData) {
+  async AddTrainer(req, trainerData) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.formateur.send('add-trainer', { ecoleId, formateurData })
+    const response = await this.trainer.send('add-trainer', { ecoleId, trainerData })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
-  async EditTrainer(id, formateurData) {
-    const response = await this.formateur.send('edit-trainer', { id, formateurData })
+  async EditTrainer(id, trainerData) {
+    const response = await this.trainer.send('edit-trainer', { id, trainerData })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
   async DeleteTrainer(req, id) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.formateur.emit('delete-trainer', { ecoleId, id })
+    const response = await this.trainer.emit('delete-trainer', { ecoleId, id })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
   async GetTrainer(id) {
-    const response = await this.formateur.send('get-trainer', id)
+    const response = await this.trainer.send('get-trainer', id)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
   async GetAllTrainers(req) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.formateur.send('get-all-trainers', ecoleId)
+    const response = await this.trainer.send('get-all-trainers', ecoleId)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
   async GetTrainersByProfile(req, id) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.formateur.send('get-trainers-profile', { ecoleId, id })
+    const response = await this.trainer.send('get-trainers-profile', { ecoleId, id })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
 
   // LEARNERS
-  async AddLearner(req, apprenantData) {
+  async AddLearner(req, learnerData) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.apprenant.send('add-learner', { ecoleId, apprenantData })
+    const response = await this.learner.send('add-learner', { ecoleId, learnerData })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
-  async EditLearner(id, apprenantData) {
-    const response = await this.apprenant.send('edit-learner', { id, apprenantData })
+  async EditLearner(id, learnerData) {
+    const response = await this.learner.send('edit-learner', { id, learnerData })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
   async DeleteLearner(req, id) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.apprenant.emit('delete-learner', { ecoleId, id })
+    const response = await this.learner.emit('delete-learner', { ecoleId, id })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
   async GetLearner(id) {
-    const response = await this.apprenant.send('get-learner', id)
+    const response = await this.learner.send('get-learner', id)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
@@ -199,7 +210,7 @@ export class AppService {
 
   async GetAllLearners(req) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.apprenant.send('get-all-learners', ecoleId)
+    const response = await this.learner.send('get-all-learners', ecoleId)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;

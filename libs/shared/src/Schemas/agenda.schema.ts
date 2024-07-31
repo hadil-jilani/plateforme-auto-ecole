@@ -13,6 +13,6 @@ export class AgendaModel {
     name: string
 
     @Prop({required:true})
-    formateursId: string[]
+    trainersId: string[]
 }
 export const profile = SchemaFactory.createForClass(AgendaModel)

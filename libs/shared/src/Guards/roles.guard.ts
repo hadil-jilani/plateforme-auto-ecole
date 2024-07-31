@@ -4,40 +4,42 @@ import { ROLES_KEY } from '../decorators/role.decorator';
 import { Role } from '../Schemas/role.enum';
 import { JwtService } from '@nestjs/jwt';
 
-
 @Injectable()
 export class RolesGuard implements CanActivate {
-  constructor (private reflecotr : Reflector,private readonly jwtService: JwtService){}
-  canActivate(
-    context: ExecutionContext,
-  ): boolean  {
-  
+  constructor(private reflector: Reflector, private readonly jwtService: JwtService) {}
 
-  const RequiredRoles  = this.reflecotr.getAllAndOverride<Role[]>(ROLES_KEY, [
-    context.getHandler(), 
-    context.getClass()
-  ])
-  if(!RequiredRoles){
-    return true; 
-  }
+  canActivate(context: ExecutionContext): boolean {
+    const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+    if (!requiredRoles) {
+      return true;
+    }
 
-  const req = context.switchToHttp().getRequest<Request>(); // Extracting request object from ExecutionContext
+    const req = context.switchToHttp().getRequest<Request>(); // Extracting request object from ExecutionContext
 
-    // accesstoken / refreshtoken hia el esm eli bch tabath bih el request 
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) {
+      throw new UnauthorizedException('Please login to access this resource!');
+    }
 
-   const refreshTokenData = req.headers['refreshtoken'] as string;
-   const decoded = this.jwtService.decode(refreshTokenData);
-    const userrole = decoded.role as string ;
+    const [type, accessToken] = authHeader.split(' ');
+    if (type !== 'Bearer' || !accessToken) {
+      throw new UnauthorizedException('Invalid authorization header format!');
+    }
 
-    if (!userrole) {
+    const decoded = this.jwtService.decode(accessToken);
+    const userRole = decoded?.role as string;
+
+    if (!userRole) {
       throw new UnauthorizedException('Unauthorized access');
     }
 
-    const hasRequiredRole = RequiredRoles.some((role) =>
-      userrole?.includes(role));
+    const hasRequiredRole = requiredRoles.some((role) => userRole.includes(role));
 
-    if(!hasRequiredRole){
-      throw new ForbiddenException('You do not have permission to access this resource , invalid user role ');
+    if (!hasRequiredRole) {
+      throw new ForbiddenException('You do not have permission to access this resource, invalid user role');
     }
     return true;
   }
