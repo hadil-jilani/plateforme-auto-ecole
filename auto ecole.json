@@ -197,7 +197,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"name\": \"Willy Wonka\",\n  \"email\": \"willywonka@gmail.com\",\n  \"phoneNumber\": \"99875144\",\n  \"creneauxIndisponibles\": [\"15:00-17:00\", \"9:00-11:00\"]\n}",
+                "raw": "{\n  \"name\": \"Willy Wonka\",\n  \"email\": \"willywonka@gmail.com\",\n  \"phoneNumber\": \"99875144\",\n  \"unavailableSlots\": [\"15:00-17:00\", \"9:00-11:00\"]\n}",
                 "form": []
             }
         },
@@ -223,7 +223,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n\n  \"creneauxIndisponibles\": [\"11:30-13:00\"]\n}",
+                "raw": "{\n\n  \"unavailableSlots\": [\"11:30-13:00\"]\n}",
                 "form": []
             }
         },
@@ -584,7 +584,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"prestation\": \"code\",\n  \"date\": \"2024-15-07\",\n  \"heureDebut\": \"15:30\",\n  \"heureFin\": \"17:30\",\n  \"lieuRDV\": \"mahdia\",\n  \"commentaires\": \"test\",\n  \"idTrainer\": \"669e347676b12476032bc224\",\n  \"ecoleId\": \"669e65c9b56e5e56b6958778\",\n  \"idLearner\": \"669f6b319d682f249bc97437\"\n  \n}",
+                "raw": "{\n  \"prestation\": \"code\",\n  \"date\": \"2024-15-07\",\n  \"startHour\": \"15:30\",\n  \"endHour\": \"17:30\",\n  \"place\": \"mahdia\",\n  \"comments\": \"test\",\n  \"trainerId\": \"669e347676b12476032bc224\",\n  \"ecoleId\": \"669e65c9b56e5e56b6958778\",\n  \"learnerId\": \"669f6b319d682f249bc97437\"\n  \n}",
                 "form": []
             }
         },
@@ -631,7 +631,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n  \n  \"prestation\": \"conduite\",\n  \"commentaires\": \"\"\n}",
+                "raw": "{\n  \n  \"prestation\": \"conduite\",\n  \"comments\": \"\"\n}",
                 "form": []
             }
         },
@@ -657,7 +657,7 @@
             ],
             "body": {
                 "type": "json",
-                "raw": "{\n  \"date\": \"2024-12-07\",\n  \"heureDebut\": \"11:30\",\n  \"heureFin\": \"00:30\"\n}",
+                "raw": "{\n  \"date\": \"2024-12-07\",\n  \"startHour\": \"11:30\",\n  \"endHour\": \"00:30\"\n}",
                 "form": []
             }
         },

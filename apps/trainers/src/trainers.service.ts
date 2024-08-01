@@ -1,5 +1,5 @@
 import { TrainerModel, NewtrainerDto, AgendaModel } from '@app/shared';
-import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
@@ -11,92 +11,115 @@ export class TrainersService {
     @InjectModel(TrainerModel.name) private Trainer: mongoose.Model<TrainerModel>,
     @InjectModel(AgendaModel.name) private Profile: mongoose.Model<AgendaModel>,
     @Inject('test2') private test: ClientProxy
-  ) { }
-
+  ) {}
 
   async addTrainer(data: NewtrainerDto) {
+    const trainerData = data['trainerData'];
+    const schoolId = data['schoolId'];
+    const { name, email, phoneNumber, unavailableSlots } = trainerData;
 
-    const trainerData = data['trainerData']
-    const ecoleId = data['ecoleId']
-    const { name, email, phoneNumber, creneauxIndisponibles } = trainerData;
-
-    const isTrainerExist = await this.Trainer.findOne({ email })
+    const isTrainerExist = await this.Trainer.findOne({ email });
     if (isTrainerExist) {
-      throw new HttpException(new BadRequestException("Cannot add new trainer , a trainer already exist with this email ! "),400)
+      throw new RpcException({
+        message: "Cannot add new trainer, a trainer already exists with this email!",
+        statusCode: 400
+      });
     }
+
     const result = await this.Trainer.create({
-      ecoleId,
+      schoolId,
       name,
       email,
       phoneNumber,
-      creneauxIndisponibles
-    })
+      unavailableSlots
+    });
+
     if (!result) {
-      throw new HttpException (new NotFoundException("You cant create a new trainer at this time please try again later ! "),400)
-    }
-    else {
-      return "Trainer has beed successfully created ! "
+      throw new RpcException({
+        message: "You can't create a new trainer at this time. Please try again later!",
+        statusCode: 400
+      });
+    } else {
+      return result;
     }
   }
 
   async editTrainer(data) {
-    const id: string = data['id']
-    const trainerData = data['trainerData']
+    const id: string = data['id'];
+    const trainerData = data['trainerData'];
     const trainer = await this.Trainer.findByIdAndUpdate(id, trainerData, { new: true });
     if (!trainer) {
-      throw new NotFoundException(`Trainer #${id} not found`);
+      throw new RpcException({
+        message: `Trainer #${id} not found`,
+        statusCode: 404
+      });
     }
     return trainer;
-
   }
-  async deleteTrainer(id,ecoleId) {
-    console.log("service")
-    const Id = new ObjectId(id)
-    const EcoleId = new ObjectId(ecoleId)
-    console.log(id, " ", ecoleId)
-    const trainer = await this.Trainer.findOne({_id:Id, ecoleId: EcoleId})
+
+  async deleteTrainer(id, schoolId) {
+    const Id = new ObjectId(id);
+    const SchoolId = new ObjectId(schoolId);
+    const trainer = await this.Trainer.findOne({ _id: Id, schoolId: SchoolId });
 
     if (!trainer) {
-      throw new HttpException(new NotFoundException("You cant delete a trainer at this time please try again later"), 404);
+      throw new RpcException({
+        message: "You can't delete a trainer at this time. Please try again later",
+        statusCode: 404
+      });
     }
-    const result = await  this.Trainer.deleteOne({_id:Id, ecoleId: EcoleId})
-  if (!result){
-    throw new HttpException(new NotFoundException("somthing went wrong please try again ! "),400)
+
+    const result = await this.Trainer.deleteOne({ _id: Id, schoolId: SchoolId });
+    if (!result) {
+      throw new RpcException({
+        message: "Something went wrong. Please try again!",
+        statusCode: 400
+      });
+    }
+
+    console.log("Trainer has been successfully deleted!");
   }
-  console.log(trainer)
-  console.log("trainer has beed successfully deleted ! ")
-}
-  
 
   async getTrainer(id) {
     const trainer = await this.Trainer.findById(id);
     if (!trainer) {
-      throw new HttpException(new NotFoundException("You cant get a trainer at this time please try again later"),400)
+      throw new RpcException({
+        message: "You can't get a trainer at this time. Please try again later",
+        statusCode: 400
+      });
     }
-    return trainer
+    return trainer;
   }
 
-  async getAllTrainers(ecoleId) {
-const trainers = await this.Trainer.find({ecoleId:ecoleId})
-if (!trainers) {
-  throw new HttpException(new NotFoundException("You cant get trainers at this time please try again later"),404)
+  async getAllTrainers(schoolId) {
+    const trainers = await this.Trainer.find({ schoolId: schoolId });
+    if (!trainers) {
+      throw new RpcException({
+        message: "You can't get trainers at this time. Please try again later",
+        statusCode: 400
+      });
     }
-    this.test.emit('test2', {})
-    return trainers
-}
+    return trainers;
+  }
+
   async getTrainersByProfile(data) {
-    const {ecoleId, id} = data
-    const profile = await this.Profile.findById(id)
-    if(!profile) {
-      throw new HttpException(new NotFoundException("No profile was found"),404)
+    const { schoolId, id } = data;
+    const profile = await this.Profile.findById(id);
+    if (!profile) {
+      throw new RpcException({
+        message: "No profile was found",
+        statusCode: 404
+      });
     }
-    console.log(profile)
-    const idList = profile["trainersId"]
-    console.log(idList)
-    const trainers = await this.Trainer.find({_id: {$in:idList}})
-if (!trainers) {
-  throw new HttpException(new NotFoundException("You cant get trainers at this time please try again later"),404)
+
+    const idList = profile["trainersId"];
+    const trainers = await this.Trainer.find({ _id: { $in: idList } });
+    if (!trainers) {
+      throw new RpcException({
+        message: "You can't get trainers at this time. Please try again later",
+        statusCode: 400
+      });
     }
-    return trainers
-}
+    return trainers;
+  }
 }

@@ -26,7 +26,7 @@ export * from './filters/rpc.exceptionFilter'
 export * from './Guards/auth.guard'
 export * from './Guards/roles.guard'
 
-export * from './Schemas/ecole.schema';
+export * from './Schemas/school.schema';
 export * from './Schemas/trainer.schema';
 export * from './Schemas/agenda.schema';
 export * from './Schemas/role.enum';

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ProfileService, UserData } from './profile.service';
-import { MessagePattern } from '@nestjs/microservices';
+import { EventPattern, MessagePattern } from '@nestjs/microservices';
 
 @Controller()
 export class ProfileController {
@@ -11,19 +11,19 @@ export class ProfileController {
     return this.profileService.findProfile(id);
   }
 
-  @MessagePattern('delete-personnal-profile')
-  DeleteproFile( id : string) : Promise<string>{
+  @EventPattern('delete-personnal-profile')
+  DeleteproFile( id : string) {
     return this.profileService.DeleteProFile(id); 
   }
   
 
   @MessagePattern('update-personnal-profile')
-  update(data): Promise<string> {
+  update(data) {
     const {id,updateData} = data
     return this.profileService.UpdateProfile(id, updateData);
   }
 
-  @MessagePattern('update-password')
+  @EventPattern('update-password')
   updatePassword(data){
     const {id,updatePassword} = data
     return this.profileService.UpdatePassword(id,updatePassword); 

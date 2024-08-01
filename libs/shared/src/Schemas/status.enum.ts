@@ -1,5 +1,5 @@
 export enum status{
-    ACTIF  = "actif", 
-    RESTREINT = "restreint", 
-    EN_ATTENTE = "en_attente",
+    ACTIVE  = "active", 
+    RESTRICTED = "restricted", 
+    PENDING = "pending",
   }

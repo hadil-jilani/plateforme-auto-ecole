@@ -3,7 +3,7 @@ import { IsNotEmpty, IsOptional, IsString, Matches } from "class-validator";
 export class DateRangeDto {
     @IsString()
     @IsOptional()
-    ecoleId?:string
+    schoolId?:string
 
     @IsNotEmpty()
     @IsString()

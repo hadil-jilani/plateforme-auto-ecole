@@ -22,9 +22,9 @@ export class LearnersController {
   @EventPattern('delete-learner')
   async deleteLearner(data) {
     const id = data["id"]
-    const ecoleId = data["ecoleId"]
+    const schoolId = data["schoolId"]
     console.log("delete", data)
-    return this.learnersService.deleteLearner(id,ecoleId);
+    return this.learnersService.deleteLearner(id,schoolId);
     }
   @MessagePattern('get-learner')
   async getLearner(id) {
@@ -33,9 +33,9 @@ export class LearnersController {
     return this.learnersService.getLearner(id);
     }
   @MessagePattern('get-all-learners')
-  async getAllLearners(ecoleId) {
-    // const ecoleId = data["ecoleId"]
-    console.log("get", ecoleId)
-    return this.learnersService.getAllLearners(ecoleId);
+  async getAllLearners(schoolId) {
+    // const schoolId = data["schoolId"]
+    console.log("get", schoolId)
+    return this.learnersService.getAllLearners(schoolId);
     }
 }

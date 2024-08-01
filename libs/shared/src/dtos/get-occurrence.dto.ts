@@ -3,7 +3,7 @@ import { IsOptional, IsString, Matches, IsArray } from "class-validator";
 export class occurrenceDto {
   @IsString()
   @IsOptional()
-  ecoleId?: string;
+  schoolId?: string;
 
   @IsOptional()
   @Matches(/^\d{4}-\d{2}-\d{2}$/gm)
@@ -24,7 +24,7 @@ export class occurrenceDto {
   
   @IsString()
   @IsOptional()
-  idLearner?: string;
+  learnerId?: string;
 
   @IsString()
   @IsOptional()

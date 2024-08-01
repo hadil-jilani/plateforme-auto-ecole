@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 
 import { ConfigModule } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthGuard, DatabaseModule, ecole, EcoleModel, trainer, TrainerModel } from '@app/shared';
+import { AuthGuard, DatabaseModule, school, SchoolModel, trainer, TrainerModel } from '@app/shared';
 import { ProfileController } from './profile.controller';
 import { ProfileService } from './profile.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
@@ -13,7 +13,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
       isGlobal: true,
       envFilePath: './.env',
     }),
-    MongooseModule.forFeature([{name : EcoleModel.name ,schema : ecole }]),
+    MongooseModule.forFeature([{name : SchoolModel.name ,schema : school }]),
       DatabaseModule,
   ],
   controllers: [ProfileController],

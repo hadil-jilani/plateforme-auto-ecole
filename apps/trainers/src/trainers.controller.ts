@@ -12,8 +12,6 @@ export class TrainersController {
     console.log("add", data)
     return this.trainersService.addTrainer(data);
     }
-
-
   @MessagePattern('edit-trainer')
   async editTrainer(data: object) {
     console.log("edit", data)
@@ -22,9 +20,9 @@ export class TrainersController {
   @EventPattern('delete-trainer')
   async deleteTrainer(data) {
     const id = data["id"]
-    const ecoleId = data["ecoleId"]
+    const schoolId = data["schoolId"]
     console.log("delete", data)
-    return this.trainersService.deleteTrainer(id,ecoleId);
+    return this.trainersService.deleteTrainer(id,schoolId);
     }
   @MessagePattern('get-trainer')
   async getTrainer(id) {
@@ -32,9 +30,9 @@ export class TrainersController {
     return this.trainersService.getTrainer(id);
     }
   @MessagePattern('get-all-trainers')
-  async getAllTrainers(ecoleId) {
-    // const ecoleId = data["ecoleId"]
-    return this.trainersService.getAllTrainers(ecoleId);
+  async getAllTrainers(schoolId) {
+    // const schoolId = data["schoolId"]
+    return this.trainersService.getAllTrainers(schoolId);
     }
   @MessagePattern('get-trainers-profile')
   async getTrainersByProfile(data:any) {

@@ -21,39 +21,41 @@ export class AppService {
 
   async Signup(data: signupDto) {
     const result = this.auth.send('sign-up', data)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
   async ActivateAccount(activationToken) {
     console.log(activationToken)
     const result = this.auth.send('activate-account', activationToken)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
 
   async Login(data) {
+    console.log("here")
+    console.log("data  ", data)
     const result = this.auth.send('login-user', data)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
   async ForgetPassword(email) {
     const result = this.auth.send('forget-pwd', email)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
   async ResetPassword(data) {
     const result = this.auth.send('reset-password', data)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
   // pending
   async SearchSchool(data) {
     const result = this.auth.send('search-school', data)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
@@ -68,7 +70,7 @@ export class AppService {
     //   req.headers['refreshtoken'] = null
     // const result = this.auth.emit('logout-user', {req})
     const result = this.auth.emit('logout-user',serializedReq)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
@@ -77,7 +79,7 @@ export class AppService {
     console.group("service")
     const id = this.GetLoggedUserId(req)
     const result = this.profile.send('get-personnal-profile', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
 
@@ -85,21 +87,21 @@ export class AppService {
     console.group("service")
     const id = this.GetLoggedUserId(req)
     const result = this.profile.send('update-personnal-profile', { id, updateData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
   async DeleteProfile(req: Request) {
     console.group("service")
     const id = this.GetLoggedUserId(req)
-    const result = this.profile.send('delete-personnal-profile', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const result = this.profile.emit('delete-personnal-profile', id)
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
   async UpdatePassword(req: Request, updatePassword: UpdatePasswordDto) {
     console.group("service")
     const id = this.GetLoggedUserId(req)
-    const result = this.profile.send('update-password', { id, updatePassword })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const result = this.profile.emit('update-password', { id, updatePassword })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
   GetLoggedUserId(req) {
@@ -123,146 +125,146 @@ export class AppService {
   // REQUESTS
   async AllRequests() {
     const response = await this.request.send('get-all-requests', {})
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return response;
   }
 
   async AcceptRequest(id) {
     const response = await this.request.emit('accept-request', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return response;
   }
   async RejectRequest(id) {
     const response = await this.request.emit('reject-request', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     return response;
   }
 
   //TRAINERS
   async AddTrainer(req, trainerData) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.trainer.send('add-trainer', { ecoleId, trainerData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.trainer.send('add-trainer', { schoolId, trainerData })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async EditTrainer(id, trainerData) {
     const response = await this.trainer.send('edit-trainer', { id, trainerData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async DeleteTrainer(req, id) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.trainer.emit('delete-trainer', { ecoleId, id })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.trainer.emit('delete-trainer', { schoolId, id })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetTrainer(id) {
     const response = await this.trainer.send('get-trainer', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetAllTrainers(req) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.trainer.send('get-all-trainers', ecoleId)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.trainer.send('get-all-trainers', schoolId)
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetTrainersByProfile(req, id) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.trainer.send('get-trainers-profile', { ecoleId, id })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.trainer.send('get-trainers-profile', { schoolId, id })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
 
   // LEARNERS
   async AddLearner(req, learnerData) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.learner.send('add-learner', { ecoleId, learnerData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.learner.send('add-learner', { schoolId, learnerData })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async EditLearner(id, learnerData) {
     const response = await this.learner.send('edit-learner', { id, learnerData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async DeleteLearner(req, id) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.learner.emit('delete-learner', { ecoleId, id })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.learner.emit('delete-learner', { schoolId, id })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetLearner(id) {
     const response = await this.learner.send('get-learner', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
 
   async GetAllLearners(req) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.learner.send('get-all-learners', ecoleId)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.learner.send('get-all-learners', schoolId)
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
 
   // OCCURRENCES
   async AddOccurrence(req, occurrenceData) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('add-occurrence', { ecoleId, occurrenceData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.occurrence.send('add-occurrence', { schoolId, occurrenceData })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async EditOccurrence(id, occurrenceData) {
     const response = await this.occurrence.send('edit-occurrence', { id, occurrenceData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async DuplicateOccurrence(id, occurrenceData) {
     const response = await this.occurrence.send('duplicate-occurrence', { id, occurrenceData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async DeleteOccurrence(id) {
     const response = await this.occurrence.emit('delete-occurrence', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetOccurrence(id) {
     const response = await this.occurrence.send('get-occurrence', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
 
   async GetOccurrences(req, data) {
     const { trainersId, startDate, endDate, date } = data
-    const ecoleId = this.GetLoggedUserId(req)
-    console.log(ecoleId)
-    const response = await this.occurrence.send('get-occurrences', { ecoleId, trainersId, startDate, endDate, date })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    console.log(schoolId)
+    const response = await this.occurrence.send('get-occurrences', { schoolId, trainersId, startDate, endDate, date })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log("here")
     return response;
   }
     // PRESTATION
 
   async AddPrestation(req, prestationData) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('add-prestation', { ecoleId, prestationData })
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.occurrence.send('add-prestation', { schoolId, prestationData })
       .pipe(catchError(error => throwError(() => new RpcException(error))))
     return response;
   }
@@ -270,63 +272,63 @@ export class AppService {
   
   async EditPrestation(id, prestationData) {
     const response = await this.occurrence.send('edit-prestation', { id, prestationData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async DeletePrestation(id) {
     const response = await this.occurrence.emit('delete-prestation', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetPrestation(id) {
     const response = await this.occurrence.send('get-prestation', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
 
   async GetPrestations(req) {
-    const ecoleId = this.GetLoggedUserId(req)
-    console.log(ecoleId)
-    const response = await this.occurrence.send('get-prestations', { ecoleId})
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    console.log(schoolId)
+    const response = await this.occurrence.send('get-all-prestations', schoolId)
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log("here")
     return response;
   }
 
   //Agendas
   async AddAgenda(req, agendaData) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.agenda.send('add-agenda', { ecoleId, agendaData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.agenda.send('add-agenda', { schoolId, agendaData })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async EditAgenda(id, agendaData) {
     const response = await this.agenda.send('edit-agenda', { id, agendaData })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async DeleteAgenda(req, id) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.agenda.emit('delete-agenda', { ecoleId, id })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.agenda.emit('delete-agenda', { schoolId, id })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetAgenda(id) {
     const response = await this.agenda.send('get-agenda', id)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }
   async GetAllAgendas(req) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.agenda.send('get-all-agendas', ecoleId)
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    const schoolId = this.GetLoggedUserId(req)
+    const response = await this.agenda.send('get-all-agendas', schoolId)
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log(response)
     return response;
   }

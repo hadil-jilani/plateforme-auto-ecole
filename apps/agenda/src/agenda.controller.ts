@@ -18,9 +18,9 @@ export class AgendaController {
   @EventPattern('delete-agenda')
   async deleteProfile(data) {
     const id = data["id"]
-    const ecoleId = data["ecoleId"]
+    const schoolId = data["schoolId"]
     console.log("delete", data)
-    return this.AgendaService.deleteProfile(id,ecoleId);
+    return this.AgendaService.deleteProfile(id,schoolId);
     }
   @MessagePattern('get-agenda')
   async getProfile(id) {
@@ -29,9 +29,9 @@ export class AgendaController {
     return this.AgendaService.getProfile(id);
     }
   @MessagePattern('get-all-agendas')
-  async getAllProfiles(ecoleId) {
-    // const ecoleId = data["ecoleId"]
-    console.log("delete", ecoleId)
-    return this.AgendaService.getAllProfiles(ecoleId);
+  async getAllProfiles(schoolId) {
+    // const schoolId = data["schoolId"]
+    console.log("delete", schoolId)
+    return this.AgendaService.getAllProfiles(schoolId);
     }
 }

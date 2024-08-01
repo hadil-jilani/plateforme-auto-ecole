@@ -5,7 +5,7 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from '@app/shared/database/db.module';
-import { ecole, EcoleModel } from '@app/shared/Schemas/ecole.schema';
+import { school, SchoolModel } from '@app/shared/Schemas/school.schema';
 import { createRabbitMQClient } from '@app/shared/utils/rmq';
 import { AuthGuard } from '@app/shared/Guards/auth.guard';
 
@@ -15,7 +15,7 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
       isGlobal: true,
       envFilePath: './.env',
     }),
-    MongooseModule.forFeature([{ name: EcoleModel.name, schema: ecole }]),
+    MongooseModule.forFeature([{ name: SchoolModel.name, schema: school }]),
     DatabaseModule
   ],
   controllers: [AppController],

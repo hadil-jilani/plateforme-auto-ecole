@@ -1,18 +1,19 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import mongoose from "mongoose";
 
 @Schema({
     timestamps : true ,
     collection: 'Trainers'
 })
 export class TrainerModel{
-    @Prop({required:true})
-    ecoleId: string
+    @Prop({required:true, type : mongoose.Schema.Types.ObjectId , ref : 'SchoolModel'})
+    schoolId : mongoose.Schema.Types.ObjectId
     @Prop({required: true})
     name : string;
     @Prop({required: true})
     email: string
     @Prop()
-    creneauxIndisponibles: string[]
+    unavailableSlots: string[]
     @Prop({required: true})
     phoneNumber: string
 }

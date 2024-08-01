@@ -1,4 +1,4 @@
-import { activationEmailDto, LearnerModel, EcoleModel, ForgotPasswordDto, TrainerModel } from '@app/shared';
+import { activationEmailDto, LearnerModel, SchoolModel, ForgotPasswordDto, TrainerModel } from '@app/shared';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,7 +10,7 @@ import { resetPwdEmailDto } from '@app/shared/dtos/resetPwdEmail.dto';
 @Injectable()
 export class EmailService {
   constructor(private mailerservice: MailerService , 
-    @InjectModel(EcoleModel.name) private Ecole : mongoose.Model<EcoleModel>,
+    @InjectModel(SchoolModel.name) private School : mongoose.Model<SchoolModel>,
     @InjectModel(TrainerModel.name) private Trainer : mongoose.Model<TrainerModel>,
     @InjectModel(LearnerModel.name) private Learner : mongoose.Model<LearnerModel>
   ) {}
@@ -86,18 +86,18 @@ export class EmailService {
       },
   });
   }
-  async SendNewOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV}){
-    const learner = await this.Learner.findById(idLearner)
-    const trainer = await this.Trainer.findById(idTrainer)
+  async SendNewOccurrence({learnerId, trainerId, prestation, date, startHour, endHour, place}){
+    const learner = await this.Learner.findById(learnerId)
+    const trainer = await this.Trainer.findById(trainerId)
     const subject= "New Occurrence"
     
     const templatePath = "libs/shared/src/templates/nouvelle-occurrence.ejs"
     const htmlContent = fs.readFileSync(templatePath, 'utf-8')
     .replace('{{prestation}}', prestation || '')
     .replace('{{date}}', date || '')
-    .replace('{{lieuRDV}}', lieuRDV || '')
-    .replace('{{heureDebut}}', heureDebut || '')
-    .replace('{{heureFin}}', heureFin || '')
+    .replace('{{place}}', place || '')
+    .replace('{{startHour}}', startHour || '')
+    .replace('{{endHour}}', endHour || '')
 
   const mailToTrainer = await this.mailerservice.sendMail({
     to : trainer.email,
@@ -119,9 +119,9 @@ export class EmailService {
   });
   console.log(mailToLearner, mailToTrainer)
   }
-  async SendUpdatedOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV}){
-    const learner = await this.Learner.findById(idLearner)
-    const trainer = await this.Trainer.findById(idTrainer)
+  async SendUpdatedOccurrence({learnerId, trainerId, prestation, date, startHour, endHour, place}){
+    const learner = await this.Learner.findById(learnerId)
+    const trainer = await this.Trainer.findById(trainerId)
     const subject= "Occurrence Update"
     
    
@@ -129,9 +129,9 @@ export class EmailService {
     const htmlContent = fs.readFileSync(templatePath, 'utf-8')
     .replace('{{prestation}}', prestation || '')
     .replace('{{date}}', date || '')
-    .replace('{{lieuRDV}}', lieuRDV || '')
-    .replace('{{heureDebut}}', heureDebut || '')
-    .replace('{{heureFin}}', heureFin || '')
+    .replace('{{place}}', place || '')
+    .replace('{{startHour}}', startHour || '')
+    .replace('{{endHour}}', endHour || '')
 
   const mailToTrainer = await this.mailerservice.sendMail({
     to : trainer.email,
@@ -153,9 +153,9 @@ export class EmailService {
   });
   console.log(mailToLearner, mailToTrainer)
   }
-  async SendCancelledOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV}){
-    const learner = await this.Learner.findById(idLearner)
-    const trainer = await this.Trainer.findById(idTrainer)
+  async SendCancelledOccurrence({learnerId, trainerId, prestation, date, startHour, endHour, place}){
+    const learner = await this.Learner.findById(learnerId)
+    const trainer = await this.Trainer.findById(trainerId)
     const subject= "Occurrence Cancellation"
     
    
@@ -163,9 +163,9 @@ export class EmailService {
     const htmlContent = fs.readFileSync(templatePath, 'utf-8')
     .replace('{{prestation}}', prestation || '')
     .replace('{{date}}', date || '')
-    .replace('{{lieuRDV}}', lieuRDV || '')
-    .replace('{{heureDebut}}', heureDebut || '')
-    .replace('{{heureFin}}', heureFin || '')
+    .replace('{{place}}', place || '')
+    .replace('{{startHour}}', startHour || '')
+    .replace('{{endHour}}', endHour || '')
 
   const mailToTrainer = await this.mailerservice.sendMail({
     to : trainer.email,

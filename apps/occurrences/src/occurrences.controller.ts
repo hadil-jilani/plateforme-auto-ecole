@@ -2,7 +2,7 @@ import { Controller, Get } from '@nestjs/common';
 import { EventPattern, MessagePattern } from '@nestjs/microservices';
 import { OccurrencesService } from './occurrences.service';
 import { DateRangeDto } from '@app/shared';
-import { occurrenceDto } from '@app/shared/dtos/occurrence.dto';
+import { occurrenceDto } from '@app/shared/dtos/get-occurrence.dto';
 
 @Controller()
 export class OccurrencesController {
@@ -44,17 +44,18 @@ export class OccurrencesController {
   EditPrestation(data){
     return this.occurrencesService.editPrestation(data);
   }
-  @MessagePattern('get-occurrence')
+  @MessagePattern('get-prestation')
   GetPrestation(id){
     return this.occurrencesService.getPrestation(id);
   }
-  @MessagePattern('get-all-occurrences')
-  GetAllPrestations(ecoleId){
-    console.log("here")
-    return this.occurrencesService.getAllPrestations(ecoleId);
+  @MessagePattern('get-all-prestations')
+  GetAllPrestations(schoolId){
+    console.log("school Id controller")
+    return this.occurrencesService.getAllPrestations(schoolId);
   }
-  @EventPattern('delete-occurrence')
+  @EventPattern('delete-prestation')
   DeletePrestation(id){
+    console.log("here")
     return this.occurrencesService.deletePrestation(id);
   }
   

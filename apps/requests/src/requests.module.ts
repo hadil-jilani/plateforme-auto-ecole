@@ -3,7 +3,7 @@ import { RequestsController } from './requests.controller';
 import { RequestsService } from './requests.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
-import { DatabaseModule, ecole, EcoleModel } from '@app/shared';
+import { DatabaseModule, school, SchoolModel } from '@app/shared';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { RolesGuard } from '@app/shared/Guards/roles.guard';
@@ -29,7 +29,7 @@ import { AuthGuard } from '@app/shared/Guards/auth.guard';
       },
     ]),
     DatabaseModule,
-    MongooseModule.forFeature([{name:EcoleModel.name, schema: ecole}])
+    MongooseModule.forFeature([{name:SchoolModel.name, schema: school}])
   ],
   controllers: [RequestsController],
   providers: [RequestsService, AuthGuard, RolesGuard, JwtService],

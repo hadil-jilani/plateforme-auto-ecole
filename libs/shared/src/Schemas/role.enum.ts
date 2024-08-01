@@ -1,4 +1,4 @@
 export enum Role{
-    ECOLE  = "ecole", 
+    SCHOOL  = "school", 
     SUPERADMIN = "superadmin"
 }

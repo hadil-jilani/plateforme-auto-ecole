@@ -4,10 +4,10 @@ import { status } from "./status.enum";
 
 @Schema({
     timestamps : true ,
-    collection: 'Ecole'
+    collection: 'School'
 })
 
-export class EcoleModel {
+export class SchoolModel {
 
   @Prop({required : true})
   name : string;
@@ -25,11 +25,11 @@ export class EcoleModel {
   password: string;
   
 
-  @Prop({required : true, enum: Role, default: Role.ECOLE})
+  @Prop({required : true, enum: Role, default: Role.SCHOOL})
   role: string;
-  @Prop({required : true, enum: status, default: status.EN_ATTENTE})
+  @Prop({required : true, enum: status, default: status.PENDING})
   status: string;
   
 }
-export const ecole = SchemaFactory.createForClass(EcoleModel);
+export const school = SchemaFactory.createForClass(SchoolModel);
 

@@ -2,8 +2,8 @@ import { IsString, IsEmail, MinLength, IsNotEmpty, IsNumber, IsOptional, IsNumbe
 
 
 export class NewtrainerDto {
-    @IsNotEmpty()
-    ecoleId: string
+    @IsOptional()
+    schoolId: string
     @IsNotEmpty()
     name: string;
     @IsNotEmpty()
@@ -13,6 +13,6 @@ export class NewtrainerDto {
     @MinLength(8)
     phoneNumber: string
     @IsOptional()
-    creneauxIndisponibles: string[];
+    unavailableSlots: string[];
 
 }

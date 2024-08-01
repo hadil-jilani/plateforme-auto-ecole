@@ -14,6 +14,6 @@ export class UpdateTrainerDto extends PartialType(NewtrainerDto) {}
     email?: string;
 
     @IsOptional()
-    creneauxIndisponibles?: string[];
+    unavailableSlots?: string[];
 
 } */

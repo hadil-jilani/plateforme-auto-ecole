@@ -29,20 +29,20 @@ export class EmailController {
     }
 
     @MessagePattern('new-occurrence-email')
-  SendNewOccurrence({idLearner, idTrainer,prestation, date, heureDebut, heureFin, lieuRDV}){
+  SendNewOccurrence({learnerId, trainerId,prestation, date, startHour, endHour, place}){
     console.log("here")
-    return this.emailService.SendNewOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV})
+    return this.emailService.SendNewOccurrence({learnerId, trainerId, prestation, date, startHour, endHour, place})
     }
     @EventPattern('update-occurrence-email')
-  SendUpdatedOccurrence({idLearner, idTrainer,prestation, date, heureDebut, heureFin, lieuRDV}){
+  SendUpdatedOccurrence({learnerId, trainerId,prestation, date, startHour, endHour, place}){
     console.log("here")
-    return this.emailService.SendUpdatedOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV})
+    return this.emailService.SendUpdatedOccurrence({learnerId, trainerId, prestation, date, startHour, endHour, place})
     
   }
   @EventPattern('cancel-occurrence-email')
-SendCancelledOccurrence({idLearner, idTrainer,prestation, date, heureDebut, heureFin, lieuRDV}){
+SendCancelledOccurrence({learnerId, trainerId,prestation, date, startHour, endHour, place}){
   console.log("here")
-  return this.emailService.SendCancelledOccurrence({idLearner, idTrainer, prestation, date, heureDebut, heureFin, lieuRDV})
+  return this.emailService.SendCancelledOccurrence({learnerId, trainerId, prestation, date, startHour, endHour, place})
   }
   @EventPattern('test2')
 test(){

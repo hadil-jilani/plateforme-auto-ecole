@@ -1,36 +1,37 @@
 import { activationDto, ForgotPasswordDto, loginDto, ResetPasswordDto, Role, signupDto, status } from '@app/shared';
-import { EcoleModel } from '@app/shared';
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { SchoolModel } from '@app/shared';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtVerifyOptions } from '@nestjs/jwt';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import * as bcrypt from "bcryptjs"
+import * as bcrypt from "bcryptjs";
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(EcoleModel.name) private Ecole: mongoose.Model<EcoleModel>,
+    @InjectModel(SchoolModel.name) private School: mongoose.Model<SchoolModel>,
     @Inject('Emails') private Sender: ClientProxy,
-    private jwtservice: JwtService, private configservice: ConfigService
+    private jwtservice: JwtService, 
+    private configservice: ConfigService
   ) { }
 
-
-  // lena bch tasna3 activation code w tekhou el data mtaa el user wthothom fl  JWTtoken wtraja3ha ll userinterface (front) 
-
+  // Signup function
   async signup(data: signupDto) {
     const { name, password, email, adresse, phoneNumber } = data;
 
-
-    const isEmailExist = await this.Ecole.findOne({ email });
+    const isEmailExist = await this.School.findOne({ email });
 
     if (isEmailExist) {
-      throw new RpcException(new BadRequestException(' User already exists with this email  ! '));
+      throw new RpcException({
+        message: 'User already exists with this email!',
+        statusCode: 400
+      });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    console.log(hashedPassword)
+    console.log(hashedPassword);
 
     const user = {
       name,
@@ -43,38 +44,15 @@ export class AuthService {
     const activationCode = activationToken.activationCode;
     const activation_token = activationToken.token;
 
-    /*  const  text  =  ` Hello ${name} 
- 
-        Thank you for registering with plateforme multicanal pour l'engagement client . To activate your account,
-        please use the following activation code:
-      
-      ${activationCode}
-      
-        Please enter this code on the activation page within the next 5
-        minutes.
-      ` */
+    const subject = 'Activate your Account';
 
-    const subject = 'Activate your Account'
-    activationCode
-
-    this.Sender.emit('send-activation-email',
-      { name, activationCode, subject, email });
-    console.log("email to be sent")
+    this.Sender.emit('send-activation-email', { name, activationCode, subject, email });
+    console.log("email to be sent");
 
     return { activation_token };
   }
 
-
-
-
-
-
-
-
-
-
-
-  // creation du token pour la activation  (lorsque on s'assure que le code de l'utilisateur et la meme que la code envoyée dans le token en fair la creation du user dans la db )
+  // Create activation token
   async createActivationToken(user: signupDto) {
     const activationCode = Math.floor(1000 + Math.random() * 9000).toString();
 
@@ -91,55 +69,61 @@ export class AuthService {
     return { token, activationCode };
   }
 
-
-
-
-
-  // lena el fonction hethy bch ysirelha l appel wakt tenzel al button verify code , bch tekhou el token eli baththelk mbekri w tekhou el code eli enty 
-  // ktebtou tawa , tkaren el token beli baththelk , w tekhou menha el activation code wl data mtaa el user w tamalou create fl redis
+  // Activate user account
   async Activate_Account(activationData: activationDto) {
     const { activationToken, activationCode } = activationData;
     const newUser: { user: signupDto, activationCode: string } = await this.jwtservice.verify(activationToken,
       { secret: this.configservice.get<string>('ACTIVATION_SECRET') } as JwtVerifyOptions
-    ) as { user: signupDto, activationCode: string }
+    ) as { user: signupDto, activationCode: string };
 
-    //activationCode houa el code eli enty ktebtou wl newUser.activationCode houa el code eli m3adihoulk fl token 
     if (newUser.activationCode !== activationCode) {
-      throw new RpcException(new BadRequestException(' Activation Code invalid !'));
+      throw new RpcException({
+        message: 'Activation Code invalid!',
+        statusCode: 400
+      });
     }
 
-    const user = await this.Ecole.create({
+    const user = await this.School.create({
       ...newUser.user
-    })
-    return { user }
+    });
+    return { user };
   }
 
-
-
-
+  // User login
   async login(data: loginDto): Promise<{
     userRole: string,
     accessToken: string,
     refreshToken: string
   }> {
-    const { email, password } = data
-    const user = await this.Ecole.findOne({ email });
+    const { email, password } = data;
+    console.log(data)
+    const user = await this.School.findOne({ email });
     if (!user) {
-      throw new RpcException(new BadRequestException('Email or password incorrect! Please try again.'));
+      throw new RpcException({
+        message: 'Email or password incorrect! Please try again.',
+        statusCode: 400
+      });
     }
 
-    const ispasswordtrue = await bcrypt.compare(password, user.password);
-    if (!ispasswordtrue) {
-      throw new RpcException(new BadRequestException('Email or password incorrect! Please try again.'));
+    const isPasswordTrue = await bcrypt.compare(password, user.password);
+    if (!isPasswordTrue) {
+      throw new RpcException({
+        message: 'Email or password incorrect! Please try again.',
+        statusCode: 400
+      });
     }
-    if (user.status === status.EN_ATTENTE || user.status === status.RESTREINT) {
-      throw new RpcException(new BadRequestException("You can't access your account at the moment."));
+    if (user.status === status.PENDING || user.status === status.RESTRICTED) {
+      throw new RpcException({
+        message: "You can't access your account at the moment.",
+        statusCode: 403
+      });
     }
 
     const accessToken = this.jwtservice.sign(
       {
         id: user._id,
-        role: user.role
+        role: user.role,
+        fullName: user.name
       },
       {
         secret: this.configservice.get<string>('ACCESS_TOKEN_SECRET'),
@@ -157,39 +141,42 @@ export class AuthService {
         expiresIn: '1d',
       },
     );
-    const userRole = user.role
+    const userRole = user.role;
     return { accessToken, refreshToken, userRole };
   }
 
-
+  // Forgot password
   async Forgotpassword(forgotPasswordDto: ForgotPasswordDto) {
     const { email } = forgotPasswordDto;
-    const user = await this.Ecole.findOne({ email: email });
+    const user = await this.School.findOne({ email: email });
     if (!user) {
-      throw new RpcException(new BadRequestException(' User not found with this email !'));
+      throw new RpcException({
+        message: 'User not found with this email!',
+        statusCode: 404
+      });
     }
-    if (user.status === status.EN_ATTENTE || user.status === status.RESTREINT) {
-      throw new RpcException(new BadRequestException("You can't change  your password at the moment."));
+    if (user.status === status.PENDING || user.status === status.RESTRICTED) {
+      throw new RpcException({
+        message: "You can't change your password at the moment.",
+        statusCode: 403
+      });
     }
 
-    const ForgotpasswordToken = await this.generateForgotPasswordTokenForLink(user);
-    const longResetPasswordUrl = this.configservice.get<string>('CLIENT_SIDE_URI') + `?verify=${ForgotpasswordToken}`;
-    console.log(ForgotpasswordToken)
+    const forgotPasswordToken = await this.generateForgotPasswordTokenForLink(user);
+    const longResetPasswordUrl = this.configservice.get<string>('CLIENT_SIDE_URI') + `?verify=${forgotPasswordToken}`;
+    console.log(forgotPasswordToken);
 
-    const name = user.name
-    const url = longResetPasswordUrl
+    const name = user.name;
+    const url = longResetPasswordUrl;
 
-    const subject = 'Reset your Password'
+    const subject = 'Reset your Password';
 
+    this.Sender.emit('forgot-pwd-email', { name, url, subject, email });
 
-    this.Sender.emit('forgot-pwd-email',
-      { name, url, subject, email });
-
-    return { message: `Your forgot password request is succesful` };
+    return  forgotPasswordToken;
   }
 
-
-  // generation du link 
+  // Generate forgot password token
   async generateForgotPasswordTokenForLink(user: any) {
     const forgotPasswordToken = this.jwtservice.sign(
       {
@@ -203,72 +190,47 @@ export class AuthService {
     return forgotPasswordToken;
   }
 
-  // Fl view win bch tekteb el mdp ejdid ==> ki tenzel al button modifier mot de pass el function hethy bch tkhdm 
-  // w taaml modification ll mdp mtaa el user 
-
-
-
-  // lena baed ma enty nzelt al url bch thezek l interface win bch tekteb el mot de passe ejdid 
-  // ki tnzl al changer mdp baed ma dakhalt el new password , ken el token valide ybadalek sionon ykolk invalide 
+  // Reset password
   async Reset_Password(resetPasswordDto: ResetPasswordDto) {
-
-    const forgotPasswordToken = resetPasswordDto['forgotPasswordToken']
-    console.log("token received:\n",forgotPasswordToken)
-    const password = resetPasswordDto['password']
+    const forgotPasswordToken = resetPasswordDto['forgotPasswordToken'];
+    console.log("token received:\n", forgotPasswordToken);
+    const password = resetPasswordDto['password'];
     const tokendecoded = await this.jwtservice.decode(forgotPasswordToken);
-    console.log(tokendecoded)
+    console.log(tokendecoded);
 
     if (!tokendecoded || tokendecoded.exp * 1000 < Date.now()) {
-      throw new RpcException(new BadRequestException('Invalid or expired token!'));
+      throw new RpcException({
+        message: 'Invalid or expired token!',
+        statusCode: 400
+      });
     }
-    /* if (!tokendecoded || tokendecoded.exp * 1000 < Date.now()) {
-      throw new RpcException(new BadRequestException('Invalid or expired token!'));
-    }
-    if (!tokendecoded) {
-      throw new RpcException(new BadRequestException('Invalid token!'));
-    } */
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const Id = tokendecoded.user._id;
 
-    const user = await this.Ecole.findOne({ _id: Id, $or: [{ role: Role.ECOLE }, { role: Role.SUPERADMIN }] });
+    const user = await this.School.findOne({ _id: Id, $or: [{ role: Role.SCHOOL }, { role: Role.SUPERADMIN }] });
 
     if (!user) {
-      throw new RpcException(new NotFoundException('User not found!'));
+      throw new RpcException({
+        message: 'User not found!',
+        statusCode: 404
+      });
     }
     user.password = hashedPassword;
     await user.save();
     return { Id };
   }
 
-
+  // Logout
   async logout(serializedReq) {
-    console.log( "test")
+    console.log("test");
     console.log("service auth");
-  console.log(serializedReq);
+    console.log(serializedReq);
 
-  // Perform logout operation
-  serializedReq.body['user'] = null;
-  serializedReq.headers['accesstoken'] = null;
-  serializedReq.headers['refreshtoken'] = null;
-  return 'Logged Out successfully'
+    // Perform logout operation
+    serializedReq.body['user'] = null;
+    serializedReq.headers['accesstoken'] = null;
+    serializedReq.headers['refreshtoken'] = null;
+    return 'Logged Out successfully';
   }
-  // async logout(req: Request) {
-  //   console.log("service auth")
-
-  //   req.body['user'] = null
-  //   req.headers['accesstoken'] = null
-  //   req.headers['refreshtoken'] = null
-  //   return 'Logged Out successfully'
-  // }
-
-
-
-
-
-
-
-
-
-
 }

@@ -11,14 +11,14 @@ export class AgendaService {
   ) {}
 
   async addProfile(data) {
-    const ecoleId: string = data['ecoleId']
+    const schoolId: string = data['schoolId']
     const {name,trainersId} = data['agendaData']
     const isProfileExist = await this.agenda.findOne({name:name})
     if(isProfileExist){
       throw new HttpException(new BadRequestException('agenda already exist'), 400)
     }
     const result = await this.agenda.create({
-      ecoleId,
+      schoolId,
       name,
       trainersId:trainersId
     })
@@ -41,17 +41,17 @@ export class AgendaService {
     return agenda;
 
   }
-  async deleteProfile(id,ecoleId) {
+  async deleteProfile(id,schoolId) {
     console.log("service")
     const Id = new ObjectId(id)
-    const EcoleId = new ObjectId(ecoleId)
-    console.log(id, " ", ecoleId)
-    const agenda = await this.agenda.findOne({_id:Id, ecoleId: EcoleId})
+    const SchoolId = new ObjectId(schoolId)
+    console.log(id, " ", schoolId)
+    const agenda = await this.agenda.findOne({_id:Id, schoolId: SchoolId})
 
     if (!agenda) {
       throw new HttpException(new NotFoundException("You cant delete a agenda at this time please try again later"), 404);
     }
-    const result = await  this.agenda.deleteOne({_id:Id, ecoleId: EcoleId})
+    const result = await  this.agenda.deleteOne({_id:Id, schoolId: SchoolId})
   if (!result){
     throw new HttpException(new NotFoundException("somthing went wrong please try again ! "),400)
   }
@@ -68,8 +68,8 @@ export class AgendaService {
     return agenda
   }
 
-  async getAllProfiles(ecoleId) {
-const agendas = await this.agenda.find({ecoleId:ecoleId})
+  async getAllProfiles(schoolId) {
+const agendas = await this.agenda.find({schoolId:schoolId})
 if (!agendas) {
   throw new HttpException(new NotFoundException("You cant get agendas at this time please try again later"),404)
     }

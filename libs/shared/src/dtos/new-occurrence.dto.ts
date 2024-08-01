@@ -5,16 +5,16 @@ export class newOccurrenceDto {
 
     @IsNotEmpty()
     @IsString()
-    idTrainer: string
+    trainerId: string
 
     
     @IsNotEmpty()
     @IsString()
-    idLearner: string
+    learnerId: string
 
     @IsNotEmpty()
     @IsString()
-    prestation: string
+    prestationId: string
     
     
     @IsNotEmpty()
@@ -23,19 +23,19 @@ export class newOccurrenceDto {
 
     @IsNotEmpty()
     @Matches(/^([0-9]|[0-1][0-9]|2[0-3]):[0-5][0-9]$/gm)
-    heureDebut: string
+    startHour: string
     
     @IsNotEmpty()
     @Matches(/^([0-9]|[0-1][0-9]|2[0-3]):[0-5][0-9]$/gm)
     // @IsTimeString()
-    heureFin: string
+    endHour: string
 
     @IsNotEmpty()
     @IsString()
-    lieuRDV: string
+    place: string
 
     @IsOptional()
     @IsString()
-    commentaires: string
+    comments: string
     
 }

@@ -7,7 +7,7 @@ import { ProfileModule } from "apps/profile/src/profile.module"
 })
 export class AgendaModel {
     @Prop({required:true})
-    ecoleId: string
+    schoolId: string
 
     @Prop({required:true})
     name: string

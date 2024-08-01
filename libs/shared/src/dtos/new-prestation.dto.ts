@@ -5,7 +5,7 @@ export class newPrestationDto {
 
     @IsString()
     @IsOptional()
-    ecoleId: string
+    schoolId: string
 
     @IsNotEmpty()
     @IsString()

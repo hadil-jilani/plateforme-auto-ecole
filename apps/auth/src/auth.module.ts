@@ -7,7 +7,7 @@ import { AuthService } from "./auth.service";
 import { MongooseModule } from "@nestjs/mongoose";
 import { DatabaseModule } from "@app/shared/database/db.module";
 import { createRabbitMQClient } from "@app/shared/utils/rmq";
-import { ecole, EcoleModel } from "@app/shared";
+import { school, SchoolModel } from "@app/shared";
 
 @Module({
   imports: [
@@ -27,7 +27,7 @@ import { ecole, EcoleModel } from "@app/shared";
       }),
     }),
     DatabaseModule,
-    MongooseModule.forFeature([{name: EcoleModel.name, schema: ecole
+    MongooseModule.forFeature([{name: SchoolModel.name, schema: school
     }])
     
   ],

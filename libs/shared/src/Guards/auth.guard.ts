@@ -4,11 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { Request } from 'express'; // Import Request type from express
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
-import { EcoleModel } from '../Schemas/ecole.schema';
+import { SchoolModel } from '../Schemas/school.schema';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(@InjectModel(EcoleModel.name) private EcoleModel: mongoose.Model<EcoleModel>,
+  constructor(@InjectModel(SchoolModel.name) private SchoolModel: mongoose.Model<SchoolModel>,
               private readonly jwtService: JwtService,
               private readonly config: ConfigService) {}
 
@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
 
       const decoded = this.jwtService.verify(refreshToken, { secret: this.config.get<string>('REFRESH_TOKEN_SECRET') });
 
-      const user = await this.EcoleModel.findById(decoded.id);
+      const user = await this.SchoolModel.findById(decoded.id);
       if (!user) {
         throw new UnauthorizedException('User not found, please register first!');
       }
