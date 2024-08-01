@@ -2,7 +2,8 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Req, UseGuards } from 
 import { AppService } from './app.service';
 import { activationDto, AuthGuard, DateRangeDto, duplicateOccurrenceDto, ForgotPasswordDto, loginDto, ResetPasswordDto, Role, Roles, RolesGuard, signupDto, UpdateOccurrenceDto, UpdatePasswordDto, UpdatePersonnalProfileDto } from '@app/shared';
 import { newOccurrenceDto } from '@app/shared';
-import { OccurrenceDayDto } from '@app/shared/dtos/occurrence-day.dto';
+import { newPrestationDto } from '@app/shared/dtos/new-prestation.dto';
+import { UpdatePrestationDto } from '@app/shared/dtos/update-prestation.dto';
 
 @Controller('api')
 export class AppController {
@@ -246,32 +247,49 @@ export class AppController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
   @Get('/occurrences')
-  GetAllOccurrences(@Req() req: Request) {
-    return this.appService.GetAllOccurrences(req)
+  GetOccurrences(@Req() req: Request, @Body() data: object) {
+    return this.appService.GetOccurrences(req, data)
+  }
+
+  /* 
+  
+  ***************
+  PRESTATION 
+  ***************
+
+  */
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ECOLE)
+  @Post('/prestation')
+  AddPrestation(@Req() req: Request, @Body() prestationData: newPrestationDto) {
+    return this.appService.AddPrestation(req, prestationData)
+  }
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ECOLE)
+  @Put('/prestation/:id')
+  EditPrestation(@Param('id') id: string, @Body() prestationData: UpdatePrestationDto) {
+    return this.appService.EditPrestation(id, prestationData)
+  }
+
+
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(Role.ECOLE)
+  @Delete('/prestation/:id')
+  DeletePrestation(@Param('id') id: string) {
+    return this.appService.DeletePrestation(id)
   }
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
-  @Get('/occurrences/day/:date')
-  getOccurrencesForOneDay(@Req() req: Request, @Param('date') date: string) {
-    return this.appService.getOccurrencesForOneDay(req, date)
+  @Get('/occurrence/:id')
+  GetPrestation(@Param('id') id: string) {
+    return this.appService.GetPrestation(id)
   }
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.ECOLE)
-  @Get('/occurrences/range')
-  GetOccurrencesForDateRange(@Req() req: Request, @Body() dateRange: DateRangeDto) {
-    return this.appService.GetOccurrencesForDateRange(req, dateRange)
-  }
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ECOLE)
-  @Get('/occurrences/trainer-day')
-  GetOccurrencesTrainerDay(@Req() req: Request, @Body() data: object) {
-    return this.appService.GetOccurrencesTrainerDay(req, data)
-  }
-  @UseGuards(AuthGuard, RolesGuard)
-  @Roles(Role.ECOLE)
-  @Get('/occurrences/trainer-range')
-  GetOccurrencesTrainerRange(@Req() req: Request, @Body() data: object) {
-    return this.appService.GetOccurrencesTrainerRange(req, data)
+  @Get('/occurrences')
+  GetPrestations(@Req() req: Request) {
+    return this.appService.GetPrestations(req)
   }
   /* 
   **********

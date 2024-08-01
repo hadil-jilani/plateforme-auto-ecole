@@ -33,7 +33,7 @@ export * from './Schemas/role.enum';
 export * from './Schemas/status.enum';
 export * from './Schemas/learner.schema';
 export * from './Schemas/occurrence.schema';
-export * from './Schemas/prestation.enum';
+export * from './Schemas/prestation.schema';
 
 
 export * from './validators/is-date-string.validator';

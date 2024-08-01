@@ -1,9 +1,11 @@
-import { OccurrenceModel, occurrence } from '@app/shared';
+import { OccurrenceModel, PrestationModel, occurrence } from '@app/shared';
 import { duplicateOccurrenceDto } from '@app/shared/dtos/duplicate-occurrence.dto';
 import { newOccurrenceDto } from '@app/shared/dtos/new-occurrence.dto';
+import { occurrenceDto } from '@app/shared/dtos/occurrence.dto';
 import { UpdateOccurrenceDto } from '@app/shared/dtos/update-occurrence.dto';
+import { UpdatePrestationDto } from '@app/shared/dtos/update-prestation.dto';
 import { BadRequestException, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import mongoose from 'mongoose';
@@ -12,6 +14,7 @@ import mongoose from 'mongoose';
 export class OccurrencesService {
   constructor(
     @InjectModel(OccurrenceModel.name) private Occurrence: mongoose.Model<OccurrenceModel>,
+    @InjectModel(PrestationModel.name) private Prestation: mongoose.Model<PrestationModel>,
     @Inject('email') private email: ClientProxy,
     @Inject('test') private test: ClientProxy,
   ) { }
@@ -82,14 +85,7 @@ export class OccurrencesService {
     return occurrence
   }
 
-  async getAllOccurrences(ecoleId) {
-    const occurrences = await this.Occurrence.find({ ecoleId: ecoleId })
-    console.log(occurrences)
-    if (!occurrences) {
-      throw new HttpException(new NotFoundException("You cant get occurrences at this time please try again later"), 404)
-    }
-    return occurrences
-  }
+
   async duplicateOccurrence(data: duplicateOccurrenceDto) {
     const id: string = data['id']
     const occurrenceData = data['occurrenceData']
@@ -113,47 +109,107 @@ export class OccurrencesService {
     return result;
 
   }
-  async getOccurrencesForOneDay(data) {
-    const {ecoleId, date} = data
-    const occurrences = await this.Occurrence.find({ ecoleId:ecoleId, date:date })
-    console.log(occurrences)
-    if (!occurrences) {
-      throw new HttpException(new NotFoundException("You cant get occurrences at this time please try again later"), 404)
+  
+  async GetOccurrences(data) {
+    const { ecoleId, trainersId, date, startDate, endDate } = data;
+  
+    const query: any = {};
+    query.ecoleId = ecoleId;
+  
+    if (date) {
+      query.date = date;
+    } else if (startDate && endDate) {
+      query.date = { $gte: startDate, $lte: endDate };
     }
-    return occurrences
-  }
-  async getOccurrencesForDateRange(data) {
-    const {ecoleId,  startDate, endDate} = data
-    console.log(startDate, "  " ,endDate)
-    const occurrences = await this.Occurrence.find({ ecoleId:ecoleId, date: { $gte: startDate, $lte: endDate } })
-    console.log(occurrences)
-    if (!occurrences) {
-      throw new HttpException(new NotFoundException("You cant get occurrences at this time please try again later"), 404)
+  
+    if (trainersId && trainersId.length > 0) {
+      query.idTrainer = { $in: trainersId };
     }
-    // const occurrencesByDate: Record<string, OccurrenceModel[]> = {};
+  
+    const occurrences = await this.Occurrence.find(query);
+    console.log(occurrences);
+    return occurrences;
+  }
+  
+  async addPrestation(data) {
+    const { type, comments } = data['prestationData'];
+    const schoolId = data['ecoleId'];
+  
+    // Check if the prestation type already exists for the given ecoleId
+    const existingPrestation = await this.Prestation.findOne({ schoolId, type });
+  
+    if (existingPrestation) {
+      throw new RpcException({
+        message: "Prestation type already exists for this school",
+        statusCode: 400
+      });    }
+  
+    // Create new prestation
+    const result = await this.Prestation.create({
+      schoolId,
+      type,
+      comments
+    });
+  
+    if (!result) {
+      throw new HttpException(new NotFoundException("Cannot create a new prestation at this time. Please try again later!"), 400);
+    } else {
+      return result;
+    }
+  }
+  
 
-    // occurrences.forEach(occurrence => {
-    //   const date = occurrence.date;
-    //   if (!occurrencesByDate[date]) {
-    //     occurrencesByDate[date] = [];
-    //   }
-    //   occurrencesByDate[date].push(occurrence);
-    // });
+  async editPrestation(data: UpdatePrestationDto) {
+    const id: string = data['id'];
+    const {type, comments} = data['prestationData'];
+    const prestation = await this.Prestation.findByIdAndUpdate(id,  { new: true });
 
-    // return occurrencesByDate;
-    return occurrences
+    if (!prestation) {
+      throw new NotFoundException(`Prestation #${id} not found`);
+    }
+    return prestation;
   }
 
-  async getByTrainersAndDay(data){
-    const {ecoleId, trainersId, date} = data
-    const occurrences = await this.Occurrence.find({idTrainer: { $in: trainersId },date: date})
-    console.log(occurrences)
-    return occurrences
+  async deletePrestation(id) {
+    console.log("service");
+    const prestation = await this.Prestation.findById(id);
+    console.log(prestation);
+
+    if (!prestation) {
+      throw new HttpException(new NotFoundException("Cannot delete the prestation at this time. Please try again later"), 404);
+    }
+
+    const result = await this.Prestation.deleteOne({ _id: id });
+    if (!result) {
+      throw new HttpException(new NotFoundException("Something went wrong. Please try again!"), 400);
+    }
+
+    console.log(prestation);
+    console.log("Prestation has been successfully deleted!");
   }
-  async getByTrainersAndRange(data){
-    const {ecoleId, trainersId, startDate, endDate} = data
-    const occurrences = await this.Occurrence.find({idTrainer: { $in: trainersId },date: { $gte :startDate, $lte:endDate}})
-    console.log(occurrences)
-    return occurrences
+
+  async getPrestation(id) {
+    const prestation = await this.Prestation.findById(id);
+    if (!prestation) {
+      throw new HttpException(new NotFoundException("Cannot get the prestation at this time. Please try again later"), 404);
+    }
+    return prestation;
   }
+  async getAllPrestations(ecoleId: string) {
+    const prestations = await this.Prestation.find({ ecoleId: ecoleId });
+  
+    if (!prestations || prestations.length === 0) {
+      throw new HttpException(
+        new NotFoundException("No prestations found for the specified ecoleId."),
+        404
+      );
+    }
+  
+    return prestations;
+  }
+  
+
+
+ 
+  
 }

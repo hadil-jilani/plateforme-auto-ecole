@@ -8,7 +8,7 @@ import mongoose, { Date } from "mongoose";
 })
 
 export class OccurrenceModel {
-    @Prop({required:true, enum: prestation})
+    @Prop({required:true})
     prestation: string
     @Prop({required:true})
     date: string

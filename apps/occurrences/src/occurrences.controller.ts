@@ -20,11 +20,7 @@ export class OccurrencesController {
   GetOccurrence(id){
     return this.occurrencesService.getOccurrence(id);
   }
-  @MessagePattern('get-all-occurrences')
-  GetAllOccurrences(ecoleId){
-    console.log("here")
-    return this.occurrencesService.getAllOccurrences(ecoleId);
-  }
+
   @EventPattern('delete-occurrence')
   DeleteOccurrence(id){
     return this.occurrencesService.deleteOccurrence(id);
@@ -33,25 +29,33 @@ export class OccurrencesController {
   DuplicateOccurrence(data){
     return this.occurrencesService.duplicateOccurrence(data);
   }
-  @MessagePattern('get-day-occurrences')
-  getOccurrencesForOneDay(data: occurrenceDto){
-    console.log("here")
-    return this.occurrencesService.getOccurrencesForOneDay(data);
-  }
-  @MessagePattern('get-range-occurrences')
-  getOccurrencesForDateRange(data:DateRangeDto){
-    console.log("here")
-    return this.occurrencesService.getOccurrencesForDateRange(data);
-  }
-  @MessagePattern('get-trainers-day')
-  getByTrainersAndDay(data:any){
-    console.log("here")
-    return this.occurrencesService.getByTrainersAndDay(data);
-  }
-  @MessagePattern('get-trainers-range')
-  getByTrainersAndRange(data:any){
-    console.log("here")
-    return this.occurrencesService.getByTrainersAndRange(data);
+  @MessagePattern('get-occurrences')
+  GetOccurrences(data:occurrenceDto){
+    console.log(data)
+    return this.occurrencesService.GetOccurrences(data);
   }
 
+  // PRESTATION
+  @EventPattern('add-prestation')
+  AddPrestation(data){
+    return this.occurrencesService.addPrestation(data);
+  }
+  @MessagePattern('edit-prestation')
+  EditPrestation(data){
+    return this.occurrencesService.editPrestation(data);
+  }
+  @MessagePattern('get-occurrence')
+  GetPrestation(id){
+    return this.occurrencesService.getPrestation(id);
+  }
+  @MessagePattern('get-all-occurrences')
+  GetAllPrestations(ecoleId){
+    console.log("here")
+    return this.occurrencesService.getAllPrestations(ecoleId);
+  }
+  @EventPattern('delete-occurrence')
+  DeletePrestation(id){
+    return this.occurrencesService.deletePrestation(id);
+  }
+  
 }

@@ -14,7 +14,7 @@ export class newOccurrenceDto {
 
     @IsNotEmpty()
     @IsString()
-    prestation: prestation
+    prestation: string
     
     
     @IsNotEmpty()

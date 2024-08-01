@@ -249,42 +249,50 @@ export class AppService {
     return response;
   }
 
-  async GetAllOccurrences(req) {
+  async GetOccurrences(req, data) {
+    const { trainersId, startDate, endDate, date } = data
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('get-all-occurrences', ecoleId)
+    console.log(ecoleId)
+    const response = await this.occurrence.send('get-occurrences', { ecoleId, trainersId, startDate, endDate, date })
+      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
+    console.log("here")
+    return response;
+  }
+    // PRESTATION
+
+  async AddPrestation(req, prestationData) {
+    const ecoleId = this.GetLoggedUserId(req)
+    const response = await this.occurrence.send('add-prestation', { ecoleId, prestationData })
+      .pipe(catchError(error => throwError(() => new RpcException(error))))
+    return response;
+  }
+  
+  
+  async EditPrestation(id, prestationData) {
+    const response = await this.occurrence.send('edit-prestation', { id, prestationData })
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
-  async getOccurrencesForOneDay(req, date) {
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('get-day-occurrences', { ecoleId, date })
+  async DeletePrestation(id) {
+    const response = await this.occurrence.emit('delete-prestation', id)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
-  async GetOccurrencesForDateRange(req, dateRange) {
-    const { startDate, endDate } = dateRange
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('get-range-occurrences', { ecoleId, startDate, endDate })
+  async GetPrestation(id) {
+    const response = await this.occurrence.send('get-prestation', id)
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
     console.log(response)
     return response;
   }
-  async GetOccurrencesTrainerDay(req, data) {
-    const { trainersId, date } = data
+
+  async GetPrestations(req) {
     const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('get-trainers-day', { ecoleId, trainersId, date })
+    console.log(ecoleId)
+    const response = await this.occurrence.send('get-prestations', { ecoleId})
       .pipe(catchError(error => throwError(() => new RpcException(error.response))))
-    console.log(response)
-    return response;
-  }
-  async GetOccurrencesTrainerRange(req, data) {
-    const { trainersId, startDate, endDate } = data
-    const ecoleId = this.GetLoggedUserId(req)
-    const response = await this.occurrence.send('get-trainers-range', { ecoleId, trainersId, startDate, endDate })
-      .pipe(catchError(error => throwError(() => new RpcException(error.response))))
-    console.log(response)
+    console.log("here")
     return response;
   }
 
