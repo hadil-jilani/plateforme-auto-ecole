@@ -1,4 +1,4 @@
-import { signupDto, UpdatePasswordDto, UpdatePersonnalProfileDto } from '@app/shared';
+import { prestation, signupDto, UpdatePasswordDto, UpdatePersonnalProfileDto } from '@app/shared';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
@@ -249,10 +249,10 @@ export class AppService {
   }
 
   async GetOccurrences(req, data) {
-    const { trainersId, startDate, endDate, date } = data
+    const { learnersId, prestationsId,trainersId, startDate, endDate, date } = data
     const schoolId = this.GetLoggedUserId(req)
     console.log(schoolId)
-    const response = await this.occurrence.send('get-occurrences', { schoolId, trainersId, startDate, endDate, date })
+    const response = await this.occurrence.send('get-occurrences', { schoolId, trainersId,prestationsId, learnersId, startDate, endDate, date })
       .pipe(catchError(error => throwError(() => new RpcException(error))))
     console.log("here")
     return response;

@@ -22,11 +22,13 @@ export class occurrenceDto {
   @IsString({ each: true })
   trainersId?: string[];
   
-  @IsString()
+  @IsArray()
   @IsOptional()
-  learnerId?: string;
+  @IsString({ each: true })
+  learnersId?: string[];
 
-  @IsString()
+  @IsArray()
   @IsOptional()
-  idPrestation?: string;
+  @IsString({ each: true })
+  prestationsId?: string[];
 }

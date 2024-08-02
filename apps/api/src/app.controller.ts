@@ -4,6 +4,7 @@ import { activationDto, AuthGuard, DateRangeDto, duplicateOccurrenceDto, ForgotP
 import { newOccurrenceDto } from '@app/shared';
 import { newPrestationDto } from '@app/shared/dtos/new-prestation.dto';
 import { UpdatePrestationDto } from '@app/shared/dtos/update-prestation.dto';
+import { occurrenceDto } from '@app/shared/dtos/get-occurrence.dto';
 
 @Controller('api')
 export class AppController {
@@ -256,7 +257,7 @@ export class AppController {
   @UseGuards(AuthGuard, RolesGuard)
   @Roles(Role.SCHOOL)
   @Get('/occurrences')
-  GetOccurrences(@Req() req: Request, @Body() data: object) {
+  GetOccurrences(@Req() req: Request, @Body() data: occurrenceDto) {
     return this.appService.GetOccurrences(req, data)
   }
 

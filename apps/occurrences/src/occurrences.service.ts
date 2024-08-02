@@ -1,4 +1,4 @@
-import { OccurrenceModel, PrestationModel, occurrence } from '@app/shared';
+import { LearnerModel, OccurrenceModel, PrestationModel, TrainerModel, occurrence } from '@app/shared';
 import { duplicateOccurrenceDto } from '@app/shared/dtos/duplicate-occurrence.dto';
 import { newOccurrenceDto } from '@app/shared/dtos/new-occurrence.dto';
 import { occurrenceDto } from '@app/shared/dtos/get-occurrence.dto';
@@ -15,6 +15,8 @@ export class OccurrencesService {
   constructor(
     @InjectModel(OccurrenceModel.name) private Occurrence: mongoose.Model<OccurrenceModel>,
     @InjectModel(PrestationModel.name) private Prestation: mongoose.Model<PrestationModel>,
+    @InjectModel(TrainerModel.name) private Trainer: mongoose.Model<TrainerModel>,
+    @InjectModel(LearnerModel.name) private Learner: mongoose.Model<LearnerModel>,
     @Inject('email') private email: ClientProxy,
     @Inject('test') private test: ClientProxy,
   ) { }
@@ -118,24 +120,65 @@ export class OccurrencesService {
 
   
   async GetOccurrences(data) {
-    const { schoolId, trainersId, date, startDate, endDate } = data;
-
-    const query: any = {};
-    query.schoolId = schoolId;
-
+    const { schoolId, trainersId, date, startDate, endDate, prestationsId, learnersId } = data;
+  
+    const query: any = { schoolId };
+  
     if (date) {
       query.date = date;
     } else if (startDate && endDate) {
       query.date = { $gte: startDate, $lte: endDate };
     }
-
+  
     if (trainersId && trainersId.length > 0) {
       query.trainerId = { $in: trainersId };
     }
-
+  
+    if (prestationsId && prestationsId.length>0) {
+      query.prestationId = { $in: prestationsId };
+    }
+  
+    if (learnersId && learnersId) {
+      query.learnerId = { $in: learnersId };
+    }
+  
     const occurrences = await this.Occurrence.find(query);
-    return occurrences;
+    const trainerIds = occurrences.map(occurrence => occurrence.trainerId);
+    const learnerIds = occurrences.map(occurrence => occurrence.learnerId);
+    const prestationIds = occurrences.map(occurrence => occurrence.prestationId);
+  
+    const [trainers, learners, prestations] = await Promise.all([
+      this.Trainer.find({ _id: { $in: trainerIds } }).lean(),
+      this.Learner.find({ _id: { $in: learnerIds } }).lean(),
+      this.Prestation.find({ _id: { $in: prestationIds } }).lean()
+    ]);
+  
+    const trainerMap = new Map(trainers.map(trainer => [trainer._id.toString(), trainer]));
+    const learnerMap = new Map(learners.map(learner => [learner._id.toString(), learner]));
+    const prestationMap = new Map(prestations.map(prestation => [prestation._id.toString(), prestation]));
+  
+    const formattedOccurrences = occurrences.map(occurrence => ({
+      id: occurrence._id,
+      date: occurrence.date,
+      startHour: occurrence.startHour,
+      endHour: occurrence.endHour,
+      place: occurrence.place,
+      comments: occurrence.comments,
+      prestation: prestationMap.get(occurrence.prestationId.toString()) 
+        ? { id: occurrence.prestationId, type: prestationMap.get(occurrence.prestationId.toString()).type }
+        : null,
+      trainer: trainerMap.get(occurrence.trainerId.toString())
+        ? { id: occurrence.trainerId, name: trainerMap.get(occurrence.trainerId.toString()).name }
+        : null,
+      learner: learnerMap.get(occurrence.learnerId.toString())
+        ? { id: occurrence.learnerId, name: learnerMap.get(occurrence.learnerId.toString()).name }
+        : null
+    }));
+  
+    return formattedOccurrences;
   }
+  
+
   
   async addPrestation(data) {
     const { type, comments } = data['prestationData'];

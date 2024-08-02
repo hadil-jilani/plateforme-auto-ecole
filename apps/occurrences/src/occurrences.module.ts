@@ -3,7 +3,7 @@ import {  OccurrencesController } from './occurrences.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Mongoose } from 'mongoose';
 import { MongooseModule } from '@nestjs/mongoose';
-import {  DatabaseModule, occurrence, OccurrenceModel, prestation, PrestationModel } from '@app/shared';
+import {  DatabaseModule, learner, LearnerModel, occurrence, OccurrenceModel, prestation, PrestationModel, trainer, TrainerModel } from '@app/shared';
 import { createRabbitMQClient } from '@app/shared/utils/rmq';
 
 import { OccurrencesService } from './occurrences.service';
@@ -30,6 +30,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
       ]), */
       MongooseModule.forFeature([{name: OccurrenceModel.name, schema: occurrence}]),
       MongooseModule.forFeature([{name: PrestationModel.name, schema: prestation}]),
+      MongooseModule.forFeature([{name: TrainerModel.name, schema: trainer}]),
+      MongooseModule.forFeature([{name: LearnerModel.name, schema: learner}]),
       DatabaseModule      
   ],
   controllers: [OccurrencesController],
