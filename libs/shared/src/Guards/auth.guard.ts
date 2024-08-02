@@ -13,9 +13,7 @@ export class AuthGuard implements CanActivate {
               private readonly config: ConfigService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const req = context.switchToHttp().getRequest<Request>(); // Extracting request object from ExecutionContext
-
-    // Extract access token from authorization header
+    const req = context.switchToHttp().getRequest<Request>(); // Extract request object
     const authHeader = req.headers.authorization;
     if (!authHeader) {
       throw new UnauthorizedException('Please login to access this resource!');
@@ -27,43 +25,50 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const decoded = this.jwtService.verify(accessToken, { secret: this.config.get<string>('ACCESS_TOKEN_SECRET') });
-      console.log(decoded)
+      const decoded = this.jwtService.verify(accessToken, {
+        secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
+      });
+      req['user'] = decoded; // Add user information to the request
       return true;
     } catch (err) {
-      await this.updateAccessToken(req);
+      // Access token is invalid or expired, try refreshing the token
+      const refreshToken = req.headers['x-refresh-token'] as string;
+      if (!refreshToken) {
+        throw new UnauthorizedException('Access token expired and no refresh token provided!');
+      }
+
+      const newAccessToken = await this.refreshAccessToken(refreshToken);
+      req.headers.authorization = `Bearer ${newAccessToken}`;
+      req['user'] = this.jwtService.decode(newAccessToken);
       return true;
     }
   }
 
-  private async updateAccessToken(req: any): Promise<void> {
+  private async refreshAccessToken(refreshToken: string): Promise<string> {
     try {
-      const authHeader = req.headers.authorization;
-      if (!authHeader) {
-        throw new UnauthorizedException('Please login again to access this resource!');
-      }
-
-      const [type, refreshToken] = authHeader.split(' ');
-      if (type !== 'Bearer' || !refreshToken) {
-        throw new UnauthorizedException('Invalid authorization header format!');
-      }
-
-      const decoded = this.jwtService.verify(refreshToken, { secret: this.config.get<string>('REFRESH_TOKEN_SECRET') });
-
+      const decoded = this.jwtService.verify(refreshToken, {
+        secret: this.config.get<string>('REFRESH_TOKEN_SECRET'),
+      });
       const user = await this.SchoolModel.findById(decoded.id);
-      if (!user) {
-        throw new UnauthorizedException('User not found, please register first!');
+      if (!user || user.refreshToken !== refreshToken) {
+        throw new UnauthorizedException('Invalid refresh token!');
       }
 
-      const accessToken = this.jwtService.sign(
-        { id: user.id, role: user.role },
-        { secret: this.config.get<string>('ACCESS_TOKEN_SECRET'), expiresIn: '30m' },
+      const newAccessToken = this.jwtService.sign(
+        {
+          id: user._id,
+          role: user.role,
+          fullName: user.name
+        },
+        {
+          secret: this.config.get<string>('ACCESS_TOKEN_SECRET'),
+          expiresIn: '20m',
+        },
       );
 
-      req.headers.authorization = `Bearer ${accessToken}`;
-      req.user = this.jwtService.decode(accessToken);
+      return newAccessToken;
     } catch (error) {
-      throw new UnauthorizedException('Invalid or expired refresh token!');
+      throw new UnauthorizedException('Invalid refresh token!');
     }
   }
 }

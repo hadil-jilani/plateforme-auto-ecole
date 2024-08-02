@@ -35,10 +35,20 @@ export class AppController {
     return this.appService.ForgetPassword(email);
   }
 
+  @Post('/refresh')
+  Refresh(@Req() req: Request) {
+    console.log("here")
+    const refreshToken = req.headers["x-refresh-token"]
+    return this.appService.refresh(refreshToken);
+  }
+
+
   @Post('/login/forget-password/reset-password')
   Resetpassword(@Body() data: ResetPasswordDto) {
     return this.appService.ResetPassword(data);
   }
+
+
   
   @Post('/logout')
   LogoutUser(@Req() req: Request) {

@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { TrainersModule } from './trainers.module';
 import { Transport } from '@nestjs/microservices';
+import { RpcExceptionFilter } from '@app/shared';
 
 async function bootstrap() {
   const app = await NestFactory.create(TrainersModule)

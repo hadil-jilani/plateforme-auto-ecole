@@ -58,20 +58,17 @@ export class AppService {
       .pipe(catchError(error => throwError(() => new RpcException(error))))
     return result
   }
+  async refresh(refreshToken:string) {
+    const result = this.auth.send('refresh-token', refreshToken)
+      .pipe(catchError(error => throwError(() => new RpcException(error))));
+    return result;
+  }
 
   async Logout(req) {
-    console.log("service")
-    console.log(req)
-    console.log(typeof(req))
-    const serializedReq = {
-      body: req.body,
-      headers: req.headers,
-    };
-    //   req.headers['refreshtoken'] = null
-    // const result = this.auth.emit('logout-user', {req})
-    const result = this.auth.emit('logout-user',serializedReq)
-      .pipe(catchError(error => throwError(() => new RpcException(error))))
-    return result
+    const userId = this.GetLoggedUserId(req)
+    const result = this.auth.emit('logout-user',  userId )
+      .pipe(catchError(error => throwError(() => new RpcException(error))));
+    return result;
   }
 
   // PROFILE

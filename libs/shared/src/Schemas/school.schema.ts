@@ -29,6 +29,8 @@ export class SchoolModel {
   role: string;
   @Prop({required : true, enum: status, default: status.PENDING})
   status: string;
+  @Prop()
+  refreshToken: string;
   
 }
 export const school = SchemaFactory.createForClass(SchoolModel);

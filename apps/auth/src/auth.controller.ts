@@ -1,6 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { EventPattern, MessagePattern } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, RpcException } from '@nestjs/microservices';
 import { signupDto } from '@app/shared';
 import { activationDto } from '@app/shared';
 import { loginDto } from '@app/shared';
@@ -37,6 +37,19 @@ export class AuthController {
     }>{
         return this.authservice.login(data);  
     }
+    @MessagePattern('refresh-token')
+    async refresh(refreshToken:string) {
+        console.log("here")
+        console.log(refreshToken)
+        if (!refreshToken) {
+          throw new RpcException({
+            message: "'Refresh token not provided!'",
+            statusCode: 400
+          })
+        }
+        return this.authservice.refresh(refreshToken);
+        
+  }
     
     @MessagePattern('forget-pwd')
     Forgotpassword(email : ForgotPasswordDto){
@@ -52,9 +65,9 @@ export class AuthController {
 
 
     @EventPattern('logout-user')
-    logoutUser(serializedReq: { body: any; headers: any }){
-        console.log("controller auth")
-        return this.authservice.logout(serializedReq)
+    logoutUser(userId:string){
+    return this.authservice.logout(userId);
     }
+
    
 }

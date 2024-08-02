@@ -127,7 +127,7 @@ export class AuthService {
       },
       {
         secret: this.configservice.get<string>('ACCESS_TOKEN_SECRET'),
-        expiresIn: '30m',
+        expiresIn: '20m',
       },
     );
 
@@ -141,6 +141,11 @@ export class AuthService {
         expiresIn: '1d',
       },
     );
+
+    // Save refresh token to the user in the database
+    user.refreshToken = refreshToken;
+    await user.save();
+
     const userRole = user.role;
     return { accessToken, refreshToken, userRole };
   }
@@ -222,15 +227,44 @@ export class AuthService {
   }
 
   // Logout
-  async logout(serializedReq) {
-    console.log("test");
-    console.log("service auth");
-    console.log(serializedReq);
+  async logout(userId: string) {
+    const user = await this.School.findById(userId);
+    if (!user) {
+      throw new RpcException({
+        message: 'User not found!',
+        statusCode: 404
+      });
+    }
 
-    // Perform logout operation
-    serializedReq.body['user'] = null;
-    serializedReq.headers['accesstoken'] = null;
-    serializedReq.headers['refreshtoken'] = null;
-    return 'Logged Out successfully';
+    user.refreshToken = null;
+    await user.save();
+    
+  }
+
+  // Refresh token
+  async refresh(refreshToken: string): Promise<{ accessToken: string }> {
+    try {
+      const decoded = this.jwtservice.verify(refreshToken, { secret: this.configservice.get<string>('REFRESH_TOKEN_SECRET') });
+      const user = await this.School.findById(decoded.id);
+      if (!user || user.refreshToken !== refreshToken) {
+        throw new RpcException({
+          message: 'Invalid or expired refresh token!',
+          statusCode: 401
+        });
+      }
+      console.log("user : ",user)
+
+      const newAccessToken = this.jwtservice.sign(
+        { id: user.id, role: user.role },
+        { secret: this.configservice.get<string>('ACCESS_TOKEN_SECRET'), expiresIn: '5m' },
+      );
+
+      return { accessToken: newAccessToken };
+    } catch (error) {
+      throw new RpcException({
+        message: 'Invalid or expired refresh token!',
+        statusCode: 401
+      });
+    }
   }
 }

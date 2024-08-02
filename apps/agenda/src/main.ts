@@ -16,8 +16,7 @@ async function bootstrap() {
     }
   )
   app.useGlobalPipes(new ValidationPipe())
-  app.useGlobalFilters(new AllExceptionsFilter());
-  app.useGlobalFilters(new RpcExceptionFilter());
+  // app.useGlobalFilters(new RpcExceptionFilter());
   app.listen();
 }
 bootstrap();

@@ -113,7 +113,7 @@ export class TrainersService {
     }
 
     const idList = profile["trainersId"];
-    const trainers = await this.Trainer.find({ _id: { $in: idList } });
+    const trainers = await this.Trainer.find({ _id: { $in: idList } }).select('-createdAt -updatedAt -schoolId -__v')
     if (!trainers) {
       throw new RpcException({
         message: "You can't get trainers at this time. Please try again later",

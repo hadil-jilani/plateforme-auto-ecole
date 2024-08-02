@@ -22,7 +22,7 @@ import { school, SchoolModel } from "@app/shared";
       useFactory: (config: ConfigService) => ({
         secret: config.get<string>('JWT_SECRET'),
         signOptions: {
-          expiresIn: config.get<string | number>('ACCESS_TOKEN_EXPIRATION'),
+          expiresIn: "20m",
         },
       }),
     }),
